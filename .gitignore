@@ -74,3 +74,5 @@ Testing/
 run
 bin/
 bin-int/
+*.zip
+*.tar

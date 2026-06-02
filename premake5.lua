@@ -6,6 +6,41 @@ workspace "Saffron"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+project "Glad"
+    location "Saffron/vendor/glad"
+    kind "StaticLib"
+    language "C"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files { "Saffron/vendor/glad/src/glad.c" }
+    includedirs { "Saffron/vendor/glad/include" }
+
+project "ImGui"
+    location "Saffron/vendor/imgui"
+    kind "StaticLib"
+    language "C++"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files {
+        "Saffron/vendor/imgui/*.cpp",
+        "Saffron/vendor/imgui/backends/imgui_impl_glfw.cpp",
+        "Saffron/vendor/imgui/backends/imgui_impl_opengl3.cpp"
+    }
+
+    includedirs {
+        "Saffron/vendor/imgui",
+        "Saffron/vendor/imgui/backends",
+        "Saffron/vendor/glad/include",
+        "Saffron/src"
+    }
+
+
 project "Saffron"
     location "Saffron"
     kind "StaticLib"
@@ -22,7 +57,14 @@ project "Saffron"
     }
 
     includedirs {
-        "%{prj.name}/src/"
+        "%{prj.name}/src/",
+        "Saffron/vendor/glad/include",
+        "Saffron/vendor/imgui"
+    }
+
+    links {
+        "Glad",
+        "ImGui"
     }
 
     filter "system:linux"
@@ -63,9 +105,14 @@ project "Sandbox"
     }
 
     includedirs {
-        "Saffron/src"
+        "Saffron/src",
+        "Saffron/vendor/glad/include",
+        "Saffron/vendor/imgui"
     }
 
     links {
-        "Saffron"
+        "Saffron",
+        "glfw",
+        "Glad",
+        "ImGui"
     }

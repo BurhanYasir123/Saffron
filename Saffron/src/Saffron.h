@@ -2,3 +2,5 @@
 
 #include "Application.h"
 #include "EntryPoint.h"
+#include "Renderer/Renderer.h"
+#include "Core.h"

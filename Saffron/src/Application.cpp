@@ -15,11 +15,6 @@ namespace Saffron
 	
 	void Application::Run()
 	{
-		SF_INFO("Default Application Initialized!");
-		while(true)
-		{
-			
-		}
 	}
 
 }

@@ -23,9 +23,11 @@ namespace Saffron
 
     void Renderer::Init(const char* window_title, int window_width, int window_height) {
         if (!glfwInit()) {
-            SF_CORE_ERR("Failed to init GLFW");
+            SF_CORE_ERR_("Failed to init GLFW", "Renderer");
             return;
         }
+
+        SF_CORE_INFO_("GLFW inttialized!", "Renderer");
 
         const char* glsl_version = "#version 130";
 
@@ -35,19 +37,23 @@ namespace Saffron
 
         s_Window = glfwCreateWindow(window_width, window_height, window_title, nullptr, nullptr);
         if (!s_Window) {
-            SF_CORE_ERR("Failed to create window");
+            SF_CORE_ERR_("Failed to create window", "Renderer");
             glfwTerminate();
             return;
         }
+
+        SF_CORE_INFO_("Window Created!!", "Renderer");
 
         glfwMakeContextCurrent(s_Window);
 
         glfwSwapInterval(0);
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-            SF_CORE_ERR("Failed to init GLAD");
+            SF_CORE_ERR_("Failed to init GLAD", "Renderer");
             return;
         }
+
+        SF_CORE_INFO_("GLFW Context and Glad initialized!!", "Renderer");
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -56,7 +62,7 @@ namespace Saffron
         ImGui_ImplGlfw_InitForOpenGL(s_Window, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
 
-
+        SF_CORE_INFO_("ImGui " << IMGUI_VERSION << " inttialized with OpenGL", "Renderer");
 
         SF_CORE_INFO("Renderer initialized with OpenGL " << glGetString(GL_VERSION));
     }

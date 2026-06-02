@@ -10,6 +10,8 @@ public:
 
 	void Run()
 	{
+		SF_INFO("HIIIIIIIIIIIIIIIIIIIIIII");
+
 		frame_num++;
 		Saffron::Renderer r("Saffron", 800, 600);
 		auto window = r.GetWindowHandle();

@@ -76,3 +76,4 @@ bin/
 bin-int/
 *.zip
 *.tar
+*.ini

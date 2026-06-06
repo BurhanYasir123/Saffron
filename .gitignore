@@ -77,3 +77,4 @@ bin-int/
 *.zip
 *.tar
 *.ini
+*.py

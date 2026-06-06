@@ -2,6 +2,10 @@
 
 namespace Saffron
 {
+    void sleep_ms(int ms) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+    }
+
 	static GLFWwindow* s_Window = nullptr;
 
     static double lastTime;
@@ -55,22 +59,30 @@ namespace Saffron
 
         SF_CORE_INFO_("GLFW Context and Glad initialized!!", "Renderer");
 
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGui::StyleColorsDark();
+        // IMGUI_CHECKVERSION();
+        // ImGui::CreateContext();
+        // ImGui::StyleColorsDark();
 
-        ImGui_ImplGlfw_InitForOpenGL(s_Window, true);
-        ImGui_ImplOpenGL3_Init(glsl_version);
+        // ImGui_ImplGlfw_InitForOpenGL(s_Window, true);
+        // ImGui_ImplOpenGL3_Init(glsl_version);
+        ImGuiInitInfo info;
+        info.window = s_Window;
+        info.glsl_version = glsl_version;
 
-        SF_CORE_INFO_("ImGui " << IMGUI_VERSION << " inttialized with OpenGL", "Renderer");
+        igRender.Init(info);
 
-        SF_CORE_INFO("Renderer initialized with OpenGL " << glGetString(GL_VERSION));
+        SF_CORE_INFO_("Renderer initialized with OpenGL " << glGetString(GL_VERSION), "Renderer");
     }
 
     void Renderer::SetBackgroundColor(glm::vec3 color)
     {
-        glClearColor(color.r, color.g, color.b, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        // glClearColor(color.r, color.g, color.b, 1.0f);
+        // glClear(GL_COLOR_BUFFER_BIT);
+        RenderInfo info;
+        info.command = RenderCommand::SCREEN_CLEAR;
+        info.color = color;
+
+        RenderQueue.push_back(info);
     }
     
     void Renderer::BeginFrame()
@@ -79,9 +91,11 @@ namespace Saffron
         lastTime = glfwGetTime();
 
         glfwPollEvents();
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();   
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplGlfw_NewFrame();
+        // ImGui::NewFrame();   
+
+        igRender.BeginFrame();
 
         // bool demo = true;
 
@@ -90,19 +104,49 @@ namespace Saffron
     
     void Renderer::EndFrame()
     {
+        // non-optimized commands
+        for(auto& command : RenderQueue)
+        {
+            if(command.command == RenderCommand::SCREEN_CLEAR)
+            {
+                //SF_CORE_WARN("Clear color");
+                glClearColor(command.color.r, command.color.g, command.color.b, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+                command.command == RenderCommand::NULL_COMMAND;
+            }
+        }
+
+        // optimized commands
+        // if(RenderQueue != LastRenderQueue)
+        // {
+        //     for(auto comamnd : RenderQueue)
+        //     {
+        //         if(command.command == RenderCommand::TRIANGLE)
+        //         {
+    
+        //         }
+        //     }
+        // }
+        // LastRenderQueue = RenderQueue;
+
+
+        RenderQueue.clear();
+        // ImGui::Render();
+        // // int display_w, display_h;
+        // // glfwGetFramebufferSize(window, &display_w, &display_h);
+        // // glViewport(0, 0, display_w, display_h);
+        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());   
+        igRender.EndFrame();     
+
+        glfwSwapBuffers(s_Window);
+
         ImGuiIO& io = ImGui::GetIO();
         double currentTime = glfwGetTime();
         io.DeltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
+        sleep_ms(10); //------------------------------------------------------------------------------------
 
-        ImGui::Render();
-        // int display_w, display_h;
-        // glfwGetFramebufferSize(window, &display_w, &display_h);
-        // glViewport(0, 0, display_w, display_h);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());        
-
-        glfwSwapBuffers(s_Window);
     }
     
     bool Renderer::ShouldEndLoop()
@@ -112,12 +156,13 @@ namespace Saffron
 
 
     void Renderer::Shutdown() {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
+        //ImGui_ImplOpenGL3_Shutdown();
+        //ImGui_ImplGlfw_Shutdown();
+        //ImGui::DestroyContext();
+        igRender.Shutdown();
 
         glfwDestroyWindow(s_Window);
         glfwTerminate();
-        SF_CORE_INFO("Renderer shutdown!!!");
+        SF_CORE_INFO_("Renderer shutdown!!!", "Renderer");
     }
 }

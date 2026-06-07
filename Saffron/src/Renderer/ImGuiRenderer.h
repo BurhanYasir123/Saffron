@@ -14,11 +14,14 @@ namespace Saffron
 
 	class ImGuiRenderer
 	{
+	private:
+		bool isInitialized = false;
 	public:
 		ImGuiRenderer() {};
 		ImGuiRenderer(ImGuiInitInfo info);
 		~ImGuiRenderer();
 
+		bool IsInitialized() { return isInitialized; }
 		void Init(ImGuiInitInfo info);
 		void BeginFrame();
 		void EndFrame();

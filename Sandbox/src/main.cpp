@@ -13,13 +13,23 @@ public:
 		SF_INFO("HIIIIIIIIIIIIIIIIIIIIIII");
 
 		frame_num++;
-		Saffron::Renderer r("Saffron", 800, 600);
-		auto window = r.GetWindowHandle();
+
+		Saffron::RendererInitInfo info{};
+
+		info.window_width = 800;
+		info.window_height = 600;
+		info.window_title = "Saffron";
+
+		Saffron::Renderer r(info);
+
+		Saffron::EventEngine ev(r);
 
 		while (!r.ShouldEndLoop()) {
 		    r.BeginFrame();
 
-		    r.SetBackgroundColor({0.1f, 0.3f, 0.4f});
+		    if(ev.IsKeyDown(SaffronKey::A)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
+		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
+
 
 		    glfwPollEvents();
 

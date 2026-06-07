@@ -10,9 +10,9 @@ namespace Saffron
 
     static double lastTime;
 
-	Renderer::Renderer(const char* window_title, int window_width, int window_height)
+	Renderer::Renderer(RendererInitInfo info)
 	{
-		Init(window_title, window_width, window_height);
+		Init(info);
 	}
 
 	Renderer::~Renderer()
@@ -25,7 +25,7 @@ namespace Saffron
 		return s_Window;
 	}
 
-    void Renderer::Init(const char* window_title, int window_width, int window_height) {
+    void Renderer::Init(RendererInitInfo info) {
         if (!glfwInit()) {
             SF_CORE_ERR_("Failed to init GLFW", "Renderer");
             return;
@@ -39,7 +39,7 @@ namespace Saffron
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        s_Window = glfwCreateWindow(window_width, window_height, window_title, nullptr, nullptr);
+        s_Window = glfwCreateWindow(info.window_width, info.window_height, info.window_title, nullptr, nullptr);
         if (!s_Window) {
             SF_CORE_ERR_("Failed to create window", "Renderer");
             glfwTerminate();
@@ -65,13 +65,14 @@ namespace Saffron
 
         // ImGui_ImplGlfw_InitForOpenGL(s_Window, true);
         // ImGui_ImplOpenGL3_Init(glsl_version);
-        ImGuiInitInfo info;
-        info.window = s_Window;
-        info.glsl_version = glsl_version;
+        ImGuiInitInfo iginfo;
+        iginfo.window = s_Window;
+        iginfo.glsl_version = glsl_version;
 
-        igRender.Init(info);
+        igRender.Init(iginfo);
 
         SF_CORE_INFO_("Renderer initialized with OpenGL " << glGetString(GL_VERSION), "Renderer");
+        isInitialized = true;
     }
 
     void Renderer::SetBackgroundColor(glm::vec3 color)

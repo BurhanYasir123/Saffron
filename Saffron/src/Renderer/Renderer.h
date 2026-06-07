@@ -26,11 +26,21 @@ namespace Saffron
         }
 	};
 
+	struct RendererInitInfo
+	{
+		RendererInitInfo() {};
+		int window_height;
+		int window_width;
+		const char* window_title;
+	};
+
 
 	class Renderer
 	{
+	private:
+		bool isInitialized = false;
 	public:
-		Renderer(const char* window_title, int window_width, int window_height);
+		Renderer(RendererInitInfo info);
 		~Renderer();
 
 		ImGuiRenderer igRender;
@@ -38,7 +48,8 @@ namespace Saffron
 		std::vector<RenderInfo> LastRenderQueue;
 
 		GLFWwindow* GetWindowHandle();
-		void Init(const char* window_title, int window_width, int window_height);
+		bool IsInitialized() { return isInitialized; };
+		void Init(RendererInitInfo info);
 		void SetBackgroundColor(glm::vec3 color);
 		void BeginFrame();
 		void EndFrame();

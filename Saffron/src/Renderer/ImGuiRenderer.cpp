@@ -22,6 +22,7 @@ namespace Saffron
         ImGui_ImplOpenGL3_Init(info.glsl_version);
 
         SF_CORE_INFO_("ImGui " << IMGUI_VERSION << " inttialized with OpenGL", "ImGuiRenderer");
+        isInitialized = true;
 	}
 
 	void ImGuiRenderer::BeginFrame()

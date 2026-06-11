@@ -98,14 +98,13 @@ namespace Saffron
 
         igRender.BeginFrame();
 
-        // bool demo = true;
+        //bool demo = true;
 
-        // ImGui::ShowDemoWindow(&demo);
+        //ImGui::ShowDemoWindow(&demo);
     }
     
     void Renderer::EndFrame()
     {
-        // non-optimized commands
         for(auto& command : RenderQueue)
         {
             if(command.command == RenderCommand::SCREEN_CLEAR)
@@ -116,20 +115,6 @@ namespace Saffron
                 command.command == RenderCommand::NULL_COMMAND;
             }
         }
-
-        // optimized commands
-        // if(RenderQueue != LastRenderQueue)
-        // {
-        //     for(auto comamnd : RenderQueue)
-        //     {
-        //         if(command.command == RenderCommand::TRIANGLE)
-        //         {
-    
-        //         }
-        //     }
-        // }
-        // LastRenderQueue = RenderQueue;
-
 
         RenderQueue.clear();
         // ImGui::Render();

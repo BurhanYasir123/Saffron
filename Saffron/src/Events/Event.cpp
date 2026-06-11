@@ -16,19 +16,19 @@ namespace Saffron
 
 	}
 
-	bool EventEngine::IsKeyDown(SaffronKey key)
+	bool EventEngine::IsKeyDown(ImGuiKey key)
 	{
-		return ImGui::IsKeyDown(ToImGuiKey(key));
+		return ImGui::IsKeyDown((key));
 	}
 
-	bool EventEngine::IsKeyPressed(SaffronKey key)
+	bool EventEngine::IsKeyPressed(ImGuiKey key)
 	{
-		return ImGui::IsKeyPressed(ToImGuiKey(key));
+		return ImGui::IsKeyPressed((key));
 	}
 	
-	bool EventEngine::IsKeyReleased(SaffronKey key)
+	bool EventEngine::IsKeyReleased(ImGuiKey key)
 	{
-		return ImGui::IsKeyReleased(ToImGuiKey(key));
+		return ImGui::IsKeyReleased((key));
 	}
 
 	bool EventEngine::IsMouseDown(int button)

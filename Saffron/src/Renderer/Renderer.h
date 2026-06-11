@@ -45,7 +45,6 @@ namespace Saffron
 
 		ImGuiRenderer igRender;
 		std::vector<RenderInfo> RenderQueue;
-		std::vector<RenderInfo> LastRenderQueue;
 
 		GLFWwindow* GetWindowHandle();
 		bool IsInitialized() { return isInitialized; };

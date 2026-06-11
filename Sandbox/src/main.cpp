@@ -27,7 +27,7 @@ public:
 		while (!r.ShouldEndLoop()) {
 		    r.BeginFrame();
 
-		    if(ev.IsKeyDown(SaffronKey::A)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
+		    if(ev.IsKeyDown(Saffron::Key::D0)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
 
 

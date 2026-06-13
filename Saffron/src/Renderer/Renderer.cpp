@@ -71,6 +71,13 @@ namespace Saffron
 
         igRender.Init(iginfo);
 
+        glGenVertexArrays(1, &gl_global_VAO);
+        glBindVertexArray(gl_global_VAO);
+
+        glGenBuffers(1, &gl_global_VB);
+
+        gl_shader_program_id = OpenGLShaders::LoadShaders("Vert.shader", "Frag.shader");
+
         SF_CORE_INFO_("Renderer initialized with OpenGL " << glGetString(GL_VERSION), "Renderer");
         isInitialized = true;
     }
@@ -84,6 +91,44 @@ namespace Saffron
         info.color = color;
 
         RenderQueue.push_back(info);
+    }
+
+    void Renderer::DrawTriangle(TriangleInfo info)
+    {
+        RenderInfo rinfo;
+        rinfo.command = RenderCommand::TRIANGLE;
+        rinfo.color = info.color;
+
+        glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
+
+        float vert_data[] = {
+            info.point1.pos.x, info.point1.pos.y, info.point1.pos.z,
+            info.point2.pos.x, info.point2.pos.y, info.point2.pos.z,
+            info.point3.pos.x, info.point3.pos.y, info.point3.pos.z
+        };
+
+        // SF_CORE_WARN(
+        //     "::: " << 
+        //     info.point1.pos.x << " " <<  info.point1.pos.y << " " <<  info.point1.pos.z << " : " << 
+        //     info.point2.pos.x << " " <<  info.point2.pos.y << " " <<  info.point2.pos.z << " : " << 
+        //     info.point3.pos.x << " " <<  info.point3.pos.y << " " <<  info.point3.pos.z
+        // );
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vert_data), vert_data, GL_DYNAMIC_DRAW);
+
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            3 * sizeof(float),
+            (void*)0
+        );
+                
+
+        rinfo.VB = gl_global_VB;
+
+        RenderQueue.push_back(rinfo);
     }
     
     void Renderer::BeginFrame()
@@ -111,8 +156,19 @@ namespace Saffron
             {
                 //SF_CORE_WARN("Clear color");
                 glClearColor(command.color.r, command.color.g, command.color.b, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT);
-                command.command == RenderCommand::NULL_COMMAND;
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            }
+
+            if(command.command == RenderCommand::TRIANGLE)
+            {   
+                glUseProgram(gl_shader_program_id);
+
+                glBindVertexArray(gl_global_VAO);
+
+                glBindBuffer(GL_ARRAY_BUFFER, command.VB);
+                glEnableVertexAttribArray(0);
+
+                glDrawArrays(GL_TRIANGLES, 0, 3);
             }
         }
 

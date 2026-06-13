@@ -1,10 +1,20 @@
 #pragma once
 
+//#define DEBUG_MEM
+
+#include <cstdlib>
+#include <new>
+#include <unordered_map>
+
 #include <iostream>
+#include <mutex>
+
+
 #include <vector>
 #include <string>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include "glad/glad.h"
 

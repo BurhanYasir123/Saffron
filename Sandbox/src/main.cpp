@@ -1,5 +1,4 @@
 #include "Saffron.h"
-#include <iostream>
 
 class Sandbox : public Saffron::Application {
 public:
@@ -24,12 +23,19 @@ public:
 
 		Saffron::EventEngine ev(r);
 
+		SF_INFO("Init Done!!!")
+
 		while (!r.ShouldEndLoop()) {
 		    r.BeginFrame();
 
 		    if(ev.IsKeyDown(Saffron::Key::D0)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
 
+		    Saffron::TriangleInfo info;
+		    info.point1 = Saffron::Vertex({-1.0f, -1.0f, 0.0f});
+		    info.point2 = Saffron::Vertex({ 1.0f, -1.0f, 0.0f});
+		    info.point3 = Saffron::Vertex({ 0.0f,  1.0f, 0.0f});
+		    r.DrawTriangle(info);
 
 		    glfwPollEvents();
 

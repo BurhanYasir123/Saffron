@@ -86,6 +86,30 @@ namespace Saffron
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_INDICES * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
 
+        // Verts
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            6 * sizeof(float),
+            (void*)0
+        );
+        glEnableVertexAttribArray(0);
+
+
+        // Colors
+        glVertexAttribPointer(
+            1,
+            3, 
+            GL_FLOAT, 
+            GL_FALSE, 
+            6 * sizeof(float), 
+            (void*)(3 * sizeof(float))
+        );
+        glEnableVertexAttribArray(1);
+
+
         gl_shader_program_id = OpenGLShaders::LoadShaders("Vert.shader", "Frag.shader");
 
         SF_CORE_INFO_("Renderer initialized with OpenGL " << glGetString(GL_VERSION), "Renderer");
@@ -190,28 +214,6 @@ namespace Saffron
         // } SF_CORE_INFO(":::::::");
 
 
-        // Verts
-        glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            6 * sizeof(float),
-            (void*)0
-        );
-        glEnableVertexAttribArray(0);
-
-
-        // Colors
-        glVertexAttribPointer(
-            1,
-            3, 
-            GL_FLOAT, 
-            GL_FALSE, 
-            6 * sizeof(float), 
-            (void*)(3 * sizeof(float))
-        );
-        glEnableVertexAttribArray(1);
 
         // glBufferData(GL_ARRAY_BUFFER, collectedVerts.size() * sizeof(float), collectedVerts.data(), GL_DYNAMIC_DRAW);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, collectedIndicies.size() * sizeof(unsigned int), collectedIndicies.data(), GL_DYNAMIC_DRAW);

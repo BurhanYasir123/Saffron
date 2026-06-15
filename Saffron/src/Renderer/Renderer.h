@@ -30,7 +30,7 @@ namespace Saffron
 
 	enum class RenderCommand
 	{
-		NULL_COMMAND, SCREEN_CLEAR, TRIANGLE
+		NULL_COMMAND, TRIANGLE
 	};
 
 	struct RenderInfo
@@ -39,7 +39,7 @@ namespace Saffron
 
 		RenderCommand command;
 		glm::vec3 color;
-		std::vector<Vertex> verts;
+		// std::vector<Vertex> verts;
 
 		unsigned int VB;
 
@@ -66,6 +66,10 @@ namespace Saffron
 		unsigned int gl_shader_program_id;
 		unsigned int gl_global_VAO;
 		unsigned int gl_global_VB;
+		unsigned int gl_global_IB;
+
+		std::vector<float> collectedVerts;
+		std::vector<unsigned int> collectedIndicies;
 	public:
 		Renderer(RendererInitInfo info);
 		~Renderer();
@@ -77,7 +81,7 @@ namespace Saffron
 		bool IsInitialized() { return isInitialized; };
 		void Init(RendererInitInfo info);
 		void SetBackgroundColor(glm::vec3 color);
-		void DrawTriangle(TriangleInfo info);
+		void InitTriangle(TriangleInfo info);
 		void BeginFrame();
 		void EndFrame();
 		bool ShouldEndLoop();

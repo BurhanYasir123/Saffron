@@ -1,0 +1,10 @@
+set -e
+premake5 gmake
+make config=debug
+
+cp ./Saffron/src/Renderer/Shaders/Vert.shader ./bin/Debug-linux-x86_64/Sandbox/
+cp ./Saffron/src/Renderer/Shaders/Frag.shader ./bin/Debug-linux-x86_64/Sandbox/
+
+pushd ./bin/Debug-linux-x86_64/Sandbox/
+./Sandbox 
+popd

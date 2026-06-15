@@ -25,17 +25,21 @@ public:
 
 		SF_INFO("Init Done!!!")
 
+		for(int i=0;i!=10;i++)
+	    {
+	    	Saffron::TriangleInfo info;
+	    	info.point1 = Saffron::Vertex({ (i/10.0f)-1.0f, -0.5f, 0.0f});
+	    	info.point2 = Saffron::Vertex({ (i/10.0f), -0.5f, 0.0f});
+	    	info.point3 = Saffron::Vertex({ (i/10.0f)-0.5f,  0.5f, 0.0f});
+	    	info.color = {(i*10.0f)/100.0f, (i*10)/100.0f, (i*10.0f)/100.0f};
+	    	r.InitTriangle(info);
+	    }
+
 		while (!r.ShouldEndLoop()) {
 		    r.BeginFrame();
 
 		    if(ev.IsKeyDown(Saffron::Key::D0)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
-
-		    Saffron::TriangleInfo info;
-		    info.point1 = Saffron::Vertex({-1.0f, -1.0f, 0.0f});
-		    info.point2 = Saffron::Vertex({ 1.0f, -1.0f, 0.0f});
-		    info.point3 = Saffron::Vertex({ 0.0f,  1.0f, 0.0f});
-		    r.DrawTriangle(info);
 
 		    glfwPollEvents();
 

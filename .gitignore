@@ -71,7 +71,6 @@ Testing/
 # other
 
 *.txt
-run
 bin/
 bin-int/
 *.zip

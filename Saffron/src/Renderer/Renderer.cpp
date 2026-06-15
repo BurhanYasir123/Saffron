@@ -2,6 +2,9 @@
 
 namespace Saffron
 {
+    const size_t MAX_VERTS = 10000; 
+    const size_t MAX_INDICES = 20000;
+
     void sleep_ms(int ms) {
         std::this_thread::sleep_for(std::chrono::milliseconds(ms));
     }
@@ -75,6 +78,13 @@ namespace Saffron
         glBindVertexArray(gl_global_VAO);
 
         glGenBuffers(1, &gl_global_VB);
+        glGenBuffers(1, &gl_global_IB);
+
+        glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
+        glBufferData(GL_ARRAY_BUFFER, MAX_VERTS * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_INDICES * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
 
         gl_shader_program_id = OpenGLShaders::LoadShaders("Vert.shader", "Frag.shader");
 
@@ -84,27 +94,23 @@ namespace Saffron
 
     void Renderer::SetBackgroundColor(glm::vec3 color)
     {
-        // glClearColor(color.r, color.g, color.b, 1.0f);
-        // glClear(GL_COLOR_BUFFER_BIT);
-        RenderInfo info;
-        info.command = RenderCommand::SCREEN_CLEAR;
-        info.color = color;
-
-        RenderQueue.push_back(info);
+        glClearColor(color.r, color.g, color.b, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void Renderer::DrawTriangle(TriangleInfo info)
+    void Renderer::InitTriangle(TriangleInfo info)
     {
         RenderInfo rinfo;
         rinfo.command = RenderCommand::TRIANGLE;
         rinfo.color = info.color;
 
-        glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
-
-        float vert_data[] = {
+        std::vector<float> vert_data = {
             info.point1.pos.x, info.point1.pos.y, info.point1.pos.z,
+            info.color.r, info.color.g, info.color.b,
             info.point2.pos.x, info.point2.pos.y, info.point2.pos.z,
-            info.point3.pos.x, info.point3.pos.y, info.point3.pos.z
+            info.color.r, info.color.g, info.color.b,
+            info.point3.pos.x, info.point3.pos.y, info.point3.pos.z,
+            info.color.r, info.color.g, info.color.b,
         };
 
         // SF_CORE_WARN(
@@ -113,18 +119,38 @@ namespace Saffron
         //     info.point2.pos.x << " " <<  info.point2.pos.y << " " <<  info.point2.pos.z << " : " << 
         //     info.point3.pos.x << " " <<  info.point3.pos.y << " " <<  info.point3.pos.z
         // );
+            
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vert_data), vert_data, GL_DYNAMIC_DRAW);
+        std::vector<unsigned int> indicies;
+        if(collectedIndicies.empty())
+        {
+            indicies = {0, 1, 2};
+        } else {
+            indicies = {
+                collectedIndicies.back() + 1, 
+                collectedIndicies.back() + 2, 
+                collectedIndicies.back() + 3
+            };
+        }
 
-        glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            3 * sizeof(float),
-            (void*)0
-        );
-                
+
+        size_t vertexOffset = (collectedVerts.size() * sizeof(float));
+        size_t indexOffset  = (collectedIndicies.size()* sizeof(unsigned int));
+        
+        glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
+        glBufferSubData(GL_ARRAY_BUFFER, vertexOffset,
+                        vert_data.size() * sizeof(float),
+                        vert_data.data());
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexOffset,
+                        indicies.size() * sizeof(unsigned int),
+                        indicies.data());
+        
+
+        collectedVerts.insert(collectedVerts.end(), vert_data.begin(), vert_data.end());
+        collectedIndicies.insert(collectedIndicies.end(), indicies.begin(), indicies.end());
+
 
         rinfo.VB = gl_global_VB;
 
@@ -150,29 +176,55 @@ namespace Saffron
     
     void Renderer::EndFrame()
     {
-        for(auto& command : RenderQueue)
-        {
-            if(command.command == RenderCommand::SCREEN_CLEAR)
-            {
-                //SF_CORE_WARN("Clear color");
-                glClearColor(command.color.r, command.color.g, command.color.b, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            }
 
-            if(command.command == RenderCommand::TRIANGLE)
-            {   
-                glUseProgram(gl_shader_program_id);
+        // SF_CORE_INFO(":::::: VERTS");
+        // for(auto x : collectedVerts)
+        // {
+        //     SF_CORE_WARN(x);
+        // } SF_CORE_INFO(":::::::");
 
-                glBindVertexArray(gl_global_VAO);
+        // SF_CORE_INFO(":::::: INDICIES");
+        // for(auto x : collectedIndicies)
+        // {
+        //     SF_CORE_WARN(x);
+        // } SF_CORE_INFO(":::::::");
 
-                glBindBuffer(GL_ARRAY_BUFFER, command.VB);
-                glEnableVertexAttribArray(0);
 
-                glDrawArrays(GL_TRIANGLES, 0, 3);
-            }
-        }
+        // Verts
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            6 * sizeof(float),
+            (void*)0
+        );
+        glEnableVertexAttribArray(0);
 
-        RenderQueue.clear();
+
+        // Colors
+        glVertexAttribPointer(
+            1,
+            3, 
+            GL_FLOAT, 
+            GL_FALSE, 
+            6 * sizeof(float), 
+            (void*)(3 * sizeof(float))
+        );
+        glEnableVertexAttribArray(1);
+
+        // glBufferData(GL_ARRAY_BUFFER, collectedVerts.size() * sizeof(float), collectedVerts.data(), GL_DYNAMIC_DRAW);
+        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, collectedIndicies.size() * sizeof(unsigned int), collectedIndicies.data(), GL_DYNAMIC_DRAW);
+
+        glUseProgram(gl_shader_program_id);
+        glBindVertexArray(gl_global_VAO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
+        glDrawElements(GL_TRIANGLES, collectedIndicies.size(), GL_UNSIGNED_INT, 0);
+
+
+        //RenderQueue.clear();
+        //collectedVerts.clear();
+        //collectedIndicies.clear();
         // ImGui::Render();
         // // int display_w, display_h;
         // // glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -187,7 +239,7 @@ namespace Saffron
         io.DeltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        sleep_ms(10); //------------------------------------------------------------------------------------
+        //sleep_ms(10); //------------------------------------------------------------------------------------
 
     }
     

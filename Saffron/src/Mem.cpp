@@ -1,5 +1,8 @@
 #include "Core.h"
 
+//#define DEBUG_MEM
+
+
 #ifdef DEBUG_MEM
 
 static size_t g_totalMemory = 0;

@@ -1,7 +1,5 @@
 #pragma once
 
-//#define DEBUG_MEM
-
 #include <cstdlib>
 #include <new>
 #include <unordered_map>

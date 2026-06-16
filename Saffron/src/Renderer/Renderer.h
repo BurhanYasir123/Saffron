@@ -22,33 +22,32 @@ namespace Saffron
 	{
 		TriangleInfo() {}
 
-		Vertex point1;
-		Vertex point2;
-		Vertex point3;
+		glm::vec3 pos;
+		float size;
 		glm::vec3 color;
 	};
 
-	enum class RenderCommand
-	{
-		NULL_COMMAND, TRIANGLE
-	};
+	// enum class RenderCommand
+	// {
+	// 	NULL_COMMAND, TRIANGLE
+	// };
 
-	struct RenderInfo
-	{
-		RenderInfo() {};
+	// struct RenderInfo
+	// {
+	// 	RenderInfo() {};
 
-		RenderCommand command;
-		glm::vec3 color;
-		// std::vector<Vertex> verts;
+	// 	RenderCommand command;
+	// 	glm::vec3 color;
+	// 	// std::vector<Vertex> verts;
 
-		unsigned int VB;
+	// 	unsigned int VB;
 
-	// 	bool operator==(const RenderInfo& other) const {
-            // return command == other.command &&
-            //        glm::all(glm::equal(color, other.color));
-            // //return true;
-        //}
-	};
+	// // 	bool operator==(const RenderInfo& other) const {
+       //      // return command == other.command &&
+       //      //        glm::all(glm::equal(color, other.color));
+       //      // //return true;
+       //  //}
+	// };
 
 	struct RendererInitInfo
 	{
@@ -68,20 +67,24 @@ namespace Saffron
 		unsigned int gl_global_VB;
 		unsigned int gl_global_IB;
 
-		std::vector<float> collectedVerts;
-		std::vector<unsigned int> collectedIndicies;
 	public:
 		Renderer(RendererInitInfo info);
 		~Renderer();
 
 		ImGuiRenderer igRender;
-		std::vector<RenderInfo> RenderQueue;
+		// std::vector<RenderInfo> RenderQueue;
+
+		std::vector<float> collectedVerts;
+		std::vector<unsigned int> collectedIndicies;
+
 
 		GLFWwindow* GetWindowHandle();
 		bool IsInitialized() { return isInitialized; };
 		void Init(RendererInitInfo info);
 		void SetBackgroundColor(glm::vec3 color);
-		void InitTriangle(TriangleInfo info);
+		int InitTriangle(TriangleInfo info);
+		TriangleInfo GetTriangleByIndex(int index);
+		void EditTriangle(int id, TriangleInfo info);
 		void BeginFrame();
 		void EndFrame();
 		bool ShouldEndLoop();

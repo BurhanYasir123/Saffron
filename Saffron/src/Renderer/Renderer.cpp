@@ -10,7 +10,6 @@ namespace Saffron
     }
 
 	static GLFWwindow* s_Window = nullptr;
-
     static double lastTime;
 
 	Renderer::Renderer(RendererInitInfo info)
@@ -62,12 +61,6 @@ namespace Saffron
 
         SF_CORE_INFO_("GLFW Context and Glad initialized!!", "Renderer");
 
-        // IMGUI_CHECKVERSION();
-        // ImGui::CreateContext();
-        // ImGui::StyleColorsDark();
-
-        // ImGui_ImplGlfw_InitForOpenGL(s_Window, true);
-        // ImGui_ImplOpenGL3_Init(glsl_version);
         ImGuiInitInfo iginfo;
         iginfo.window = s_Window;
         iginfo.glsl_version = glsl_version;
@@ -122,24 +115,20 @@ namespace Saffron
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void Renderer::InitTriangle(TriangleInfo info)
+    int Renderer::InitTriangle(TriangleInfo info)
     {
-        RenderInfo rinfo;
-        rinfo.command = RenderCommand::TRIANGLE;
-        rinfo.color = info.color;
-
         std::vector<float> vert_data = {
-            info.point1.pos.x, info.point1.pos.y, info.point1.pos.z,
+            info.pos.x-(info.size/2), info.pos.y-(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
-            info.point2.pos.x, info.point2.pos.y, info.point2.pos.z,
+            info.pos.x+(info.size/2), info.pos.y-(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
-            info.point3.pos.x, info.point3.pos.y, info.point3.pos.z,
+            info.pos.x, info.pos.y+(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
         };
 
         // SF_CORE_WARN(
         //     "::: " << 
-        //     info.point1.pos.x << " " <<  info.point1.pos.y << " " <<  info.point1.pos.z << " : " << 
+        //     info.pos.x-(info.size/2) << " " <<  info.pos.y-(info.size/2) << " " <<  0.0f << " : " << 
         //     info.point2.pos.x << " " <<  info.point2.pos.y << " " <<  info.point2.pos.z << " : " << 
         //     info.point3.pos.x << " " <<  info.point3.pos.y << " " <<  info.point3.pos.z
         // );
@@ -172,13 +161,57 @@ namespace Saffron
                         indicies.data());
         
 
+        int id = collectedIndicies.size() / 3;
+
         collectedVerts.insert(collectedVerts.end(), vert_data.begin(), vert_data.end());
         collectedIndicies.insert(collectedIndicies.end(), indicies.begin(), indicies.end());
 
+        return id;
+    }
 
-        rinfo.VB = gl_global_VB;
+    TriangleInfo Renderer::GetTriangleByIndex(int i)
+    {
+        // Complicated offset math
 
-        RenderQueue.push_back(rinfo);
+        // p3 is the topmost vertex
+        // p2 is a vertex at the bottom
+
+        float p3x = collectedVerts[(i*18)+12];
+        float p3y = collectedVerts[(i*18)+13];
+        float p2y = collectedVerts[(i*18)+7];
+
+        glm::vec3 pos;
+        pos.x = p3x;
+        
+        //SF_CORE_WARN("p3 x: " << collectedVerts[(i*18)+12] << " p3 y: " << collectedVerts[(i*18)+13] << " p2 y: " << collectedVerts[(i*18)+7]);
+        
+        float size = p3y - p2y;
+        pos.y = p3y - (size/2);
+        
+        glm::vec3 color;
+        color.r = collectedVerts[(i*18)+15];
+        color.g = collectedVerts[(i*18)+16];
+        color.b = collectedVerts[(i*18)+17];
+
+        TriangleInfo result;
+        result.pos = pos;
+        result.size = size;
+        result.color = color;
+
+        return result;
+    }
+
+    void Renderer::EditTriangle(int id, TriangleInfo info)
+    {
+        std::vector<float> vert = {
+            info.pos.x-(info.size/2), info.pos.y-(info.size/2), 0.0f,
+            info.color.r, info.color.g, info.color.b,
+            info.pos.x+(info.size/2), info.pos.y-(info.size/2), 0.0f,
+            info.color.r, info.color.g, info.color.b,
+            info.pos.x, info.pos.y+(info.size/2), 0.0f,
+            info.color.r, info.color.g, info.color.b,
+        };
+        glBufferSubData(GL_ARRAY_BUFFER, (id*18)*sizeof(float), vert.size()*sizeof(float), vert.data());
     }
     
     void Renderer::BeginFrame()
@@ -187,14 +220,10 @@ namespace Saffron
         lastTime = glfwGetTime();
 
         glfwPollEvents();
-        // ImGui_ImplOpenGL3_NewFrame();
-        // ImGui_ImplGlfw_NewFrame();
-        // ImGui::NewFrame();   
 
         igRender.BeginFrame();
 
         //bool demo = true;
-
         //ImGui::ShowDemoWindow(&demo);
     }
     
@@ -213,25 +242,11 @@ namespace Saffron
         //     SF_CORE_WARN(x);
         // } SF_CORE_INFO(":::::::");
 
-
-
-        // glBufferData(GL_ARRAY_BUFFER, collectedVerts.size() * sizeof(float), collectedVerts.data(), GL_DYNAMIC_DRAW);
-        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, collectedIndicies.size() * sizeof(unsigned int), collectedIndicies.data(), GL_DYNAMIC_DRAW);
-
         glUseProgram(gl_shader_program_id);
         glBindVertexArray(gl_global_VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
         glDrawElements(GL_TRIANGLES, collectedIndicies.size(), GL_UNSIGNED_INT, 0);
 
-
-        //RenderQueue.clear();
-        //collectedVerts.clear();
-        //collectedIndicies.clear();
-        // ImGui::Render();
-        // // int display_w, display_h;
-        // // glfwGetFramebufferSize(window, &display_w, &display_h);
-        // // glViewport(0, 0, display_w, display_h);
-        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());   
         igRender.EndFrame();     
 
         glfwSwapBuffers(s_Window);
@@ -252,9 +267,6 @@ namespace Saffron
 
 
     void Renderer::Shutdown() {
-        //ImGui_ImplOpenGL3_Shutdown();
-        //ImGui_ImplGlfw_Shutdown();
-        //ImGui::DestroyContext();
         igRender.Shutdown();
 
         glfwDestroyWindow(s_Window);

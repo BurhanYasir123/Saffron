@@ -212,6 +212,8 @@ namespace Saffron
             info.color.r, info.color.g, info.color.b,
         };
         glBufferSubData(GL_ARRAY_BUFFER, (id*18)*sizeof(float), vert.size()*sizeof(float), vert.data());
+
+        std::copy(vert.begin(), vert.end(), collectedVerts.begin() + id*18);
     }
     
     void Renderer::BeginFrame()

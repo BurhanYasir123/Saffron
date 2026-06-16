@@ -5,7 +5,7 @@ public:
 	Sandbox() {}
 	~Sandbox() {}
 
-	int frame_num;
+	int frame_num = 0;
 
 	void Run()
 	{
@@ -34,8 +34,9 @@ public:
 	    }
 
 	    Saffron::TriangleInfo tinfo;
-
-	    tinfo.color = { 0.1f, 0.2, 0.5f };
+	    tinfo.pos = { -0.5f, -0.5f, 0.0f };
+	    tinfo.size = 0.4f;
+	    tinfo.color = { 0.1f, 0.3, 0.5f };
 	    int tid = r.InitTriangle(tinfo);
 
 		while (!r.ShouldEndLoop()) {
@@ -43,6 +44,29 @@ public:
 
 		    if(ev.IsKeyDown(Saffron::Key::D0)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
+
+		    auto conf = r.GetTriangleByIndex(tid);
+		    if(ev.IsKeyDown(Saffron::Key::W))
+		    {
+		    	conf.pos.y += 0.001f;
+		    	r.EditTriangle(tid, conf);
+		    }
+		    if(ev.IsKeyDown(Saffron::Key::S))
+		    {
+		    	conf.pos.y -= 0.001f;
+		    	r.EditTriangle(tid, conf);
+		    }
+		    if(ev.IsKeyDown(Saffron::Key::A))
+		    {
+		    	conf.pos.x -= 0.001f;
+		    	r.EditTriangle(tid, conf);
+		    }
+		    if(ev.IsKeyDown(Saffron::Key::D))
+		    {
+		    	conf.pos.x += 0.001f;
+		    	r.EditTriangle(tid, conf);
+		    }
+
 
 		    ImGuiIO& io = ImGui::GetIO();
 

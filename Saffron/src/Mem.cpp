@@ -2,7 +2,6 @@
 
 //#define DEBUG_MEM
 
-
 #ifdef DEBUG_MEM
 
 static size_t g_totalMemory = 0;
@@ -18,10 +17,10 @@ void* operator new(std::size_t size) {
     return ptr;
 }
 
-void operator delete(void* ptr) noexcept {
+void operator delete(void* ptr, std::size_t size) noexcept {
     if (!ptr) return;
-    // We don’t know the size here unless we track it separately.
-    // For simplicity, just log the free.
+
+    g_totalMemory -= size;
     SF_CORE_WARN_("Freed memory @ " << ptr 
               << " (total still = " << g_totalMemory << ")", "(--DEBUG_MEM--)");
     std::free(ptr);

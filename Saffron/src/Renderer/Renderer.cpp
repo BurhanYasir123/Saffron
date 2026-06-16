@@ -120,8 +120,10 @@ namespace Saffron
         std::vector<float> vert_data = {
             info.pos.x-(info.size/2), info.pos.y-(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
+            
             info.pos.x+(info.size/2), info.pos.y-(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
+            
             info.pos.x, info.pos.y+(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
         };
@@ -206,8 +208,10 @@ namespace Saffron
         std::vector<float> vert = {
             info.pos.x-(info.size/2), info.pos.y-(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
+
             info.pos.x+(info.size/2), info.pos.y-(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
+            
             info.pos.x, info.pos.y+(info.size/2), 0.0f,
             info.color.r, info.color.g, info.color.b,
         };
@@ -216,6 +220,58 @@ namespace Saffron
         std::copy(vert.begin(), vert.end(), collectedVerts.begin() + id*18);
     }
     
+    int Renderer::InitRectangle(RectangleInfo info)
+    {
+        std::vector<float> vert_data = {
+            info.pos.x, info.pos.y, info.pos.z, 
+            info.color.r, info.color.g, info.color.b,
+            
+            info.pos.x, info.pos.y-info.height, info.pos.z,
+            info.color.r, info.color.g, info.color.b,
+            
+            info.pos.x+info.width, info.pos.y-info.height, info.pos.z,
+            info.color.r, info.color.g, info.color.b,
+
+            info.pos.x+info.width, info.pos.y, info.pos.z,
+            info.color.r, info.color.g, info.color.b,
+        };
+
+        std::vector<unsigned int> indicies;
+        if(collectedIndicies.empty())
+        {
+            indicies = {0, 1, 2,  3, 0, 2};
+        } else {
+            indicies = {
+                collectedIndicies.back() + 1, 
+                collectedIndicies.back() + 2, 
+                collectedIndicies.back() + 3,
+                collectedIndicies.back() + 4,
+                collectedIndicies.back() + 1,
+                collectedIndicies.back() + 3
+            };
+        }
+
+        size_t vertexOffset = (collectedVerts.size() * sizeof(float));
+        size_t indexOffset  = (collectedIndicies.size()* sizeof(unsigned int));
+        
+        glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
+        glBufferSubData(GL_ARRAY_BUFFER, vertexOffset,
+                        vert_data.size() * sizeof(float),
+                        vert_data.data());
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexOffset,
+                        indicies.size() * sizeof(unsigned int),
+                        indicies.data());
+
+        int id = collectedIndicies.size() / 4;
+
+        collectedVerts.insert(collectedVerts.end(), vert_data.begin(), vert_data.end());
+        collectedIndicies.insert(collectedIndicies.end(), indicies.begin(), indicies.end());
+
+        return id;
+    }
+
     void Renderer::BeginFrame()
     {
         ImGuiIO& io = ImGui::GetIO();

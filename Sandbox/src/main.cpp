@@ -39,6 +39,13 @@ public:
 	    tinfo.color = { 0.1f, 0.3, 0.5f };
 	    int tid = r.InitTriangle(tinfo);
 
+	    Saffron::RectangleInfo rectinfo;
+	    rectinfo.pos = { -0.5f, 0.5f, 0.0f };
+	    rectinfo.width = 0.3f;
+	    rectinfo.height = 0.4f;
+	    rectinfo.color = { 1.0f, 0.5f, 0.0f };
+	    r.InitRectangle(rectinfo);
+
 		while (!r.ShouldEndLoop()) {
 		    r.BeginFrame();
 
@@ -67,6 +74,7 @@ public:
 		    	r.EditTriangle(tid, conf);
 		    }
 
+		    //SF_INFO("x: " << conf.pos.x << " y: " << conf.pos.y);
 
 		    ImGuiIO& io = ImGui::GetIO();
 
@@ -105,15 +113,6 @@ public:
     		ImGui::Text("FPS: %.1f", 1.0f / io.DeltaTime);
     		ImGui::Text("%.1f", (float)tid);
     		if(ImGui::Button("Do THings")) {
-    			// std::vector<float> vert = {
-    			// 	r.collectedVerts[(tid*18)+0 ], r.collectedVerts[(tid*18)+1 ], r.collectedVerts[(tid*18)+2 ], 
-    			// 	r.collectedVerts[(tid*18)+3 ], r.collectedVerts[(tid*18)+4 ], r.collectedVerts[(tid*18)+5 ], 
-    			// 	r.collectedVerts[(tid*18)+6 ], r.collectedVerts[(tid*18)+7 ], r.collectedVerts[(tid*18)+8 ], 
-    			// 	r.collectedVerts[(tid*18)+9 ], r.collectedVerts[(tid*18)+10], 1.0f, //collectedVerts[(tid*18)+11], 
-    			// 	r.collectedVerts[(tid*18)+12], r.collectedVerts[(tid*18)+13], r.collectedVerts[(tid*18)+14],
-    			// 	r.collectedVerts[(tid*18)+15], r.collectedVerts[(tid*18)+16], r.collectedVerts[(tid*18)+17]
-    			// };
-    			// glBufferSubData(GL_ARRAY_BUFFER, (tid*18)*sizeof(float), vert.size()*sizeof(float), vert.data());
     			auto info = r.GetTriangleByIndex(id);
     			info.color = { 1.0f, 0.0f, 0.0f };
     			r.EditTriangle(id, info);

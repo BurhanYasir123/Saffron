@@ -27,27 +27,15 @@ namespace Saffron
 		glm::vec3 color;
 	};
 
-	// enum class RenderCommand
-	// {
-	// 	NULL_COMMAND, TRIANGLE
-	// };
+	struct RectangleInfo
+	{
+		RectangleInfo() {}
 
-	// struct RenderInfo
-	// {
-	// 	RenderInfo() {};
-
-	// 	RenderCommand command;
-	// 	glm::vec3 color;
-	// 	// std::vector<Vertex> verts;
-
-	// 	unsigned int VB;
-
-	// // 	bool operator==(const RenderInfo& other) const {
-       //      // return command == other.command &&
-       //      //        glm::all(glm::equal(color, other.color));
-       //      // //return true;
-       //  //}
-	// };
+		glm::vec3 pos;
+		float width;
+		float height;
+		glm::vec3 color;
+	};
 
 	struct RendererInitInfo
 	{
@@ -83,6 +71,7 @@ namespace Saffron
 		void Init(RendererInitInfo info);
 		void SetBackgroundColor(glm::vec3 color);
 		int InitTriangle(TriangleInfo info);
+		int InitRectangle(RectangleInfo info);
 		TriangleInfo GetTriangleByIndex(int index);
 		void EditTriangle(int id, TriangleInfo info);
 		void BeginFrame();

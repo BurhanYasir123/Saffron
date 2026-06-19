@@ -1,17 +1,21 @@
+#include "Core.h"
+#include "Renderer/Renderer.h"
 #include "Saffron.h"
+#include <GL/gl.h>
+#include <vector>
 
 class Sandbox : public Saffron::Application {
 public:
-	Sandbox() {}
-	~Sandbox() {}
+	int framei;
 
-	int frame_num = 0;
+	Sandbox() {
+		framei = 0;
+	}
+	~Sandbox() {}
 
 	void Run()
 	{
 		SF_INFO("HIIIIIIIIIIIIIIIIIIIIIII");
-
-		frame_num++;
 
 		Saffron::RendererInitInfo info{};
 		info.window_width = 800;
@@ -24,61 +28,20 @@ public:
 
 		SF_INFO("Init Done!!!")
 
-		for(int i=0;i!=10;i++)
-	    {
-	    	Saffron::TriangleInfo info;
-	    	info.pos = { i/10.0f, 0.5f, 0.5f };
-	    	info.size = 0.5f;
-	    	info.color = {(i*10.0f)/100.0f, (i*10)/100.0f, (i*10.0f)/100.0f};
-	    	r.InitTriangle(info);
-	    }
-
-	    Saffron::TriangleInfo tinfo;
-	    tinfo.pos = { -0.5f, -0.5f, 0.0f };
-	    tinfo.size = 0.4f;
-	    tinfo.color = { 0.1f, 0.3, 0.5f };
-	    int tid = r.InitTriangle(tinfo);
-
-	    Saffron::RectangleInfo rectinfo;
-	    rectinfo.pos = { -0.5f, 0.5f, 0.0f };
-	    rectinfo.width = 0.3f;
-	    rectinfo.height = 0.4f;
-	    rectinfo.color = { 1.0f, 0.5f, 0.0f };
-	    r.InitRectangle(rectinfo);
+		std::vector<Saffron::TriangleInfo> objs;
 
 		while (!r.ShouldEndLoop()) {
 		    r.BeginFrame();
 
+    		framei += 1;
+
 		    if(ev.IsKeyDown(Saffron::Key::D0)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
-
-		    auto conf = r.GetTriangleByIndex(tid);
-		    if(ev.IsKeyDown(Saffron::Key::W))
-		    {
-		    	conf.pos.y += 0.001f;
-		    	r.EditTriangle(tid, conf);
-		    }
-		    if(ev.IsKeyDown(Saffron::Key::S))
-		    {
-		    	conf.pos.y -= 0.001f;
-		    	r.EditTriangle(tid, conf);
-		    }
-		    if(ev.IsKeyDown(Saffron::Key::A))
-		    {
-		    	conf.pos.x -= 0.001f;
-		    	r.EditTriangle(tid, conf);
-		    }
-		    if(ev.IsKeyDown(Saffron::Key::D))
-		    {
-		    	conf.pos.x += 0.001f;
-		    	r.EditTriangle(tid, conf);
-		    }
-
-		    //SF_INFO("x: " << conf.pos.x << " y: " << conf.pos.y);
 
 		    ImGuiIO& io = ImGui::GetIO();
 
 		    // --- ImGui Window for Triangle Creation ---
+
 		    static float pos[3] = {0.0f, 0.0f, 0.0f};
     		static float color[3] = { 0.4f, 0.7f, 0.2f };
     		static float size = 0.5f;
@@ -93,31 +56,41 @@ public:
     		ImGui::SliderFloat("::", &size, 0.0f, 2.0f);
 		
     		ImGui::ColorEdit3("Color", color);
-			
-			unsigned int id;
 
     		if(ImGui::Button("Add Triangle")) {
     		    Saffron::TriangleInfo info;
     		    info.pos = { pos[0], pos[1], pos[2] };
     		    info.size = size;
     		    info.color = { color[0], color[1], color[2] };
-    		    id = r.InitTriangle(info);
+    		    objs.push_back(info);
     		}
 		
     		ImGui::End();
 
 
-		    if(frame_num == 1 || (frame_num%100) == 0) auto fps = 1.0f / io.DeltaTime;
+    		float fps;
+
+		    if((framei%10) == 0){ fps = 1.0f / io.DeltaTime; };
 
     		ImGui::Begin("Demo");
-    		ImGui::Text("FPS: %.1f", 1.0f / io.DeltaTime);
-    		ImGui::Text("%.1f", (float)tid);
-    		if(ImGui::Button("Do THings")) {
-    			auto info = r.GetTriangleByIndex(id);
-    			info.color = { 1.0f, 0.0f, 0.0f };
-    			r.EditTriangle(id, info);
-    		}
+    		ImGui::Text("FPS: %.1f", fps);
+    		// if(ImGui::Button("Do THings")) {
+    		// }
     		ImGui::End();    	
+
+			for(int i=0;i!=10;i++)
+	    	{
+	    		Saffron::TriangleInfo info;
+	    		info.pos = { (i/10.0f)-0.5f, 0.5f, 0.0f };
+	    		info.size = 0.5f;
+	    		info.color = {(i*10.0f)/100.0f, (i*10)/100.0f, (i*10.0f)/100.0f};
+	    		r.DrawTriangle(info);
+	    	}
+
+	    	for(auto obj : objs)
+	    	{
+	    		r.DrawTriangle(obj);
+	    	}
 
 		    r.EndFrame();
 		}

@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Core.h"
 
 namespace Saffron
 {
@@ -67,6 +68,9 @@ namespace Saffron
 
         igRender.Init(iginfo);
 
+        VB_offset = 0;
+        IB_offset = 0;
+
         glGenVertexArrays(1, &gl_global_VAO);
         glBindVertexArray(gl_global_VAO);
 
@@ -74,10 +78,10 @@ namespace Saffron
         glGenBuffers(1, &gl_global_IB);
 
         glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
-        glBufferData(GL_ARRAY_BUFFER, MAX_VERTS * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, MAX_VERTS * sizeof(float), nullptr, GL_STREAM_DRAW);
         
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_INDICES * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_INDICES * sizeof(unsigned int), nullptr, GL_STREAM_DRAW);
 
         // Verts
         glVertexAttribPointer(
@@ -115,161 +119,22 @@ namespace Saffron
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    int Renderer::InitTriangle(TriangleInfo info)
+    int Renderer::DrawTriangle(TriangleInfo info)
     {
-        std::vector<float> vert_data = {
-            info.pos.x-(info.size/2), info.pos.y-(info.size/2), 0.0f,
-            info.color.r, info.color.g, info.color.b,
-            
-            info.pos.x+(info.size/2), info.pos.y-(info.size/2), 0.0f,
-            info.color.r, info.color.g, info.color.b,
-            
-            info.pos.x, info.pos.y+(info.size/2), 0.0f,
-            info.color.r, info.color.g, info.color.b,
-        };
+        RenderCommand cmd;
+        cmd.type = MeshType::TRIANGLE;
+        cmd.pos = info.pos;
+        cmd.color = info.color;
+        cmd.size = info.size;
 
-        // SF_CORE_WARN(
-        //     "::: " << 
-        //     info.pos.x-(info.size/2) << " " <<  info.pos.y-(info.size/2) << " " <<  0.0f << " : " << 
-        //     info.point2.pos.x << " " <<  info.point2.pos.y << " " <<  info.point2.pos.z << " : " << 
-        //     info.point3.pos.x << " " <<  info.point3.pos.y << " " <<  info.point3.pos.z
-        // );
-            
+        CommandQueue.push_back(cmd);
 
-        std::vector<unsigned int> indicies;
-        if(collectedIndicies.empty())
-        {
-            indicies = {0, 1, 2};
-        } else {
-            indicies = {
-                collectedIndicies.back() + 1, 
-                collectedIndicies.back() + 2, 
-                collectedIndicies.back() + 3
-            };
-        }
-
-
-        size_t vertexOffset = (collectedVerts.size() * sizeof(float));
-        size_t indexOffset  = (collectedIndicies.size()* sizeof(unsigned int));
-        
-        glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
-        glBufferSubData(GL_ARRAY_BUFFER, vertexOffset,
-                        vert_data.size() * sizeof(float),
-                        vert_data.data());
-        
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexOffset,
-                        indicies.size() * sizeof(unsigned int),
-                        indicies.data());
-        
-
-        int id = collectedIndicies.size() / 3;
-
-        collectedVerts.insert(collectedVerts.end(), vert_data.begin(), vert_data.end());
-        collectedIndicies.insert(collectedIndicies.end(), indicies.begin(), indicies.end());
-
-        return id;
-    }
-
-    TriangleInfo Renderer::GetTriangleByIndex(int i)
-    {
-        // Complicated offset math
-
-        // p3 is the topmost vertex
-        // p2 is a vertex at the bottom
-
-        float p3x = collectedVerts[(i*18)+12];
-        float p3y = collectedVerts[(i*18)+13];
-        float p2y = collectedVerts[(i*18)+7];
-
-        glm::vec3 pos;
-        pos.x = p3x;
-        
-        //SF_CORE_WARN("p3 x: " << collectedVerts[(i*18)+12] << " p3 y: " << collectedVerts[(i*18)+13] << " p2 y: " << collectedVerts[(i*18)+7]);
-        
-        float size = p3y - p2y;
-        pos.y = p3y - (size/2);
-        
-        glm::vec3 color;
-        color.r = collectedVerts[(i*18)+15];
-        color.g = collectedVerts[(i*18)+16];
-        color.b = collectedVerts[(i*18)+17];
-
-        TriangleInfo result;
-        result.pos = pos;
-        result.size = size;
-        result.color = color;
-
-        return result;
-    }
-
-    void Renderer::EditTriangle(int id, TriangleInfo info)
-    {
-        std::vector<float> vert = {
-            info.pos.x-(info.size/2), info.pos.y-(info.size/2), 0.0f,
-            info.color.r, info.color.g, info.color.b,
-
-            info.pos.x+(info.size/2), info.pos.y-(info.size/2), 0.0f,
-            info.color.r, info.color.g, info.color.b,
-            
-            info.pos.x, info.pos.y+(info.size/2), 0.0f,
-            info.color.r, info.color.g, info.color.b,
-        };
-        glBufferSubData(GL_ARRAY_BUFFER, (id*18)*sizeof(float), vert.size()*sizeof(float), vert.data());
-
-        std::copy(vert.begin(), vert.end(), collectedVerts.begin() + id*18);
+        return 0;
     }
     
-    int Renderer::InitRectangle(RectangleInfo info)
+    int Renderer::DrawRectangle(RectangleInfo info)
     {
-        std::vector<float> vert_data = {
-            info.pos.x, info.pos.y, info.pos.z, 
-            info.color.r, info.color.g, info.color.b,
-            
-            info.pos.x, info.pos.y-info.height, info.pos.z,
-            info.color.r, info.color.g, info.color.b,
-            
-            info.pos.x+info.width, info.pos.y-info.height, info.pos.z,
-            info.color.r, info.color.g, info.color.b,
-
-            info.pos.x+info.width, info.pos.y, info.pos.z,
-            info.color.r, info.color.g, info.color.b,
-        };
-
-        std::vector<unsigned int> indicies;
-        if(collectedIndicies.empty())
-        {
-            indicies = {0, 1, 2,  3, 0, 2};
-        } else {
-            indicies = {
-                collectedIndicies.back() + 1, 
-                collectedIndicies.back() + 2, 
-                collectedIndicies.back() + 3,
-                collectedIndicies.back() + 4,
-                collectedIndicies.back() + 1,
-                collectedIndicies.back() + 3
-            };
-        }
-
-        size_t vertexOffset = (collectedVerts.size() * sizeof(float));
-        size_t indexOffset  = (collectedIndicies.size()* sizeof(unsigned int));
-        
-        glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
-        glBufferSubData(GL_ARRAY_BUFFER, vertexOffset,
-                        vert_data.size() * sizeof(float),
-                        vert_data.data());
-        
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexOffset,
-                        indicies.size() * sizeof(unsigned int),
-                        indicies.data());
-
-        int id = collectedIndicies.size() / 4;
-
-        collectedVerts.insert(collectedVerts.end(), vert_data.begin(), vert_data.end());
-        collectedIndicies.insert(collectedIndicies.end(), indicies.begin(), indicies.end());
-
-        return id;
+        return 0;
     }
 
     void Renderer::BeginFrame()
@@ -300,14 +165,47 @@ namespace Saffron
         //     SF_CORE_WARN(x);
         // } SF_CORE_INFO(":::::::");
 
+        for(auto cmd : CommandQueue)
+        {
+            switch (cmd.type) {
+                case MeshType::TRIANGLE:
+                    float vert_data[6*3] = {
+                        cmd.pos.x, cmd.pos.y+(cmd.size/2), cmd.pos.z,
+                        cmd.color.r, cmd.color.g, cmd.color.b,
+
+                        cmd.pos.x-(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
+                        cmd.color.r, cmd.color.g, cmd.color.b,
+
+                        cmd.pos.x+(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
+                        cmd.color.r, cmd.color.g, cmd.color.b, 
+                    };
+                    glBufferSubData(GL_ARRAY_BUFFER, VB_offset*sizeof(float), sizeof(vert_data), vert_data);
+                    VB_offset += 18;
+
+                    unsigned int index_data[3] = {
+                        (unsigned int)( ( IB_offset - 1) + 1 ),
+                        (unsigned int)( ( IB_offset - 1) + 2 ),
+                        (unsigned int)( ( IB_offset - 1) + 3 )
+                    };
+
+                    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, IB_offset*sizeof(float), sizeof(index_data), index_data);
+                    IB_offset += 3;
+
+            }
+        }
+
         glUseProgram(gl_shader_program_id);
         glBindVertexArray(gl_global_VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
-        glDrawElements(GL_TRIANGLES, collectedIndicies.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, IB_offset, GL_UNSIGNED_INT, 0);
 
         igRender.EndFrame();     
 
         glfwSwapBuffers(s_Window);
+
+        CommandQueue.clear();
+        VB_offset = 0;
+        IB_offset = 0;
 
         ImGuiIO& io = ImGui::GetIO();
         double currentTime = glfwGetTime();

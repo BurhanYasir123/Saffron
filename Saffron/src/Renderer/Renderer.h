@@ -45,6 +45,21 @@ namespace Saffron
 		const char* window_title;
 	};
 
+	enum class MeshType
+	{
+		TRIANGLE, RECTANGLE, NULL_COMMAND
+	};
+
+	struct RenderCommand
+	{	
+		RenderCommand() {}
+		MeshType type;
+		glm::vec3 pos;
+		glm::vec3 color;
+		float size;
+		float w;
+		float h;
+	};
 
 	class Renderer
 	{
@@ -54,13 +69,14 @@ namespace Saffron
 		unsigned int gl_global_VAO;
 		unsigned int gl_global_VB;
 		unsigned int gl_global_IB;
-
+		int VB_offset;
+		int IB_offset;
 	public:
 		Renderer(RendererInitInfo info);
 		~Renderer();
 
 		ImGuiRenderer igRender;
-		// std::vector<RenderInfo> RenderQueue;
+		std::vector<RenderCommand> CommandQueue;
 
 		std::vector<float> collectedVerts;
 		std::vector<unsigned int> collectedIndicies;
@@ -70,10 +86,8 @@ namespace Saffron
 		bool IsInitialized() { return isInitialized; };
 		void Init(RendererInitInfo info);
 		void SetBackgroundColor(glm::vec3 color);
-		int InitTriangle(TriangleInfo info);
-		int InitRectangle(RectangleInfo info);
-		TriangleInfo GetTriangleByIndex(int index);
-		void EditTriangle(int id, TriangleInfo info);
+		int DrawTriangle(TriangleInfo info);
+		int DrawRectangle(RectangleInfo info);
 		void BeginFrame();
 		void EndFrame();
 		bool ShouldEndLoop();

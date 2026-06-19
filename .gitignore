@@ -67,4 +67,4 @@ bin-int/
 *.tar
 *.ini
 *.py
-!Saffron/vendor/imgui
+comile_commands/

@@ -67,4 +67,4 @@ bin-int/
 *.tar
 *.ini
 *.py
-comile_commands/
+compile_commands/

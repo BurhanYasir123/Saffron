@@ -116,3 +116,18 @@ project "Sandbox"
         "Glad",
         "ImGui"
     }
+
+    filter "configurations:Debug"
+        defines "SF_DEBUG"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        defines "SF_RELEASE"
+        runtime "Release"
+        optimize "on"
+
+    filter "configurations:Dist"
+        defines "SF_DIST"
+        runtime "Release"
+        optimize "on"

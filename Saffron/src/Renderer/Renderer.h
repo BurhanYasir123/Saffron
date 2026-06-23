@@ -2,7 +2,10 @@
 
 #include "Core.h"
 #include "ImGuiRenderer.h"
+#include "Renderer/Camera.h"
 #include "Shaders.h"
+#include <unordered_map>
+#include "Camera.h"
 
 namespace Saffron
 {
@@ -47,7 +50,7 @@ namespace Saffron
 
 	enum class MeshType
 	{
-		TRIANGLE, RECTANGLE, NULL_COMMAND
+		NULL_COMMAND, TRIANGLE, RECTANGLE
 	};
 
 	struct RenderCommand
@@ -71,6 +74,10 @@ namespace Saffron
 		unsigned int gl_global_IB;
 		int VB_offset;
 		int IB_offset;
+		std::unordered_map<const char*, int> gl_Uniforms;
+		bool DefaultCamera;
+
+		//Camera* m_camera;
 	public:
 		Renderer(RendererInitInfo info);
 		~Renderer();
@@ -80,7 +87,9 @@ namespace Saffron
 
 		std::vector<float> collectedVerts;
 		std::vector<unsigned int> collectedIndicies;
-
+		
+		float aspect_ratio;
+		int win_w; int win_h;
 
 		GLFWwindow* GetWindowHandle();
 		bool IsInitialized() { return isInitialized; };
@@ -88,6 +97,7 @@ namespace Saffron
 		void SetBackgroundColor(glm::vec3 color);
 		int DrawTriangle(TriangleInfo info);
 		int DrawRectangle(RectangleInfo info);
+		void RegisterCamera(Camera* cam);
 		void BeginFrame();
 		void EndFrame();
 		bool ShouldEndLoop();

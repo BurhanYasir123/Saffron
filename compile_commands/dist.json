@@ -1,0 +1,91 @@
+[
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/glad",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/glad/src/glad.c",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Glad/glad.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Glad/glad.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/glad/src/glad.c"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends/imgui_impl_glfw.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/src -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_impl_glfw.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_impl_glfw.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends/imgui_impl_glfw.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends/imgui_impl_opengl3.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/src -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_impl_opengl3.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_impl_opengl3.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends/imgui_impl_opengl3.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/src -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_demo.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/src -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_demo.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_demo.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_demo.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_draw.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/src -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_draw.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_draw.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_draw.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_tables.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/src -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_tables.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_tables.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_tables.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_widgets.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui/backends -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/src -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_widgets.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/ImGui/imgui_widgets.d -c /home/burhan/local-dev/Saffron/Saffron/vendor/imgui/imgui_widgets.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/src/Application.cpp",
+            "command": "cc -MD -MP -DSF_DIST -I/home/burhan/local-dev/Saffron/Saffron/src -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -m64 -O2 -fPIC -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Application.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Application.d -c /home/burhan/local-dev/Saffron/Saffron/src/Application.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/src/Events/Event.cpp",
+            "command": "cc -MD -MP -DSF_DIST -I/home/burhan/local-dev/Saffron/Saffron/src -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -m64 -O2 -fPIC -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Event.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Event.d -c /home/burhan/local-dev/Saffron/Saffron/src/Events/Event.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/src/Mem.cpp",
+            "command": "cc -MD -MP -DSF_DIST -I/home/burhan/local-dev/Saffron/Saffron/src -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -m64 -O2 -fPIC -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Mem.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Mem.d -c /home/burhan/local-dev/Saffron/Saffron/src/Mem.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/src/Renderer/Camera.cpp",
+            "command": "cc -MD -MP -DSF_DIST -I/home/burhan/local-dev/Saffron/Saffron/src -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -m64 -O2 -fPIC -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Camera.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Camera.d -c /home/burhan/local-dev/Saffron/Saffron/src/Renderer/Camera.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/src/Renderer/ImGuiRenderer.cpp",
+            "command": "cc -MD -MP -DSF_DIST -I/home/burhan/local-dev/Saffron/Saffron/src -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -m64 -O2 -fPIC -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/ImGuiRenderer.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/ImGuiRenderer.d -c /home/burhan/local-dev/Saffron/Saffron/src/Renderer/ImGuiRenderer.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Saffron",
+            "file": "/home/burhan/local-dev/Saffron/Saffron/src/Renderer/Renderer.cpp",
+            "command": "cc -MD -MP -DSF_DIST -I/home/burhan/local-dev/Saffron/Saffron/src -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -m64 -O2 -fPIC -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Renderer.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Saffron/Renderer.d -c /home/burhan/local-dev/Saffron/Saffron/src/Renderer/Renderer.cpp"
+          }
+,
+          {
+            "directory": "/home/burhan/local-dev/Saffron/Sandbox",
+            "file": "/home/burhan/local-dev/Saffron/Sandbox/src/main.cpp",
+            "command": "cc -MD -MP -I/home/burhan/local-dev/Saffron/Saffron/src -I/home/burhan/local-dev/Saffron/Saffron/vendor/glad/include -I/home/burhan/local-dev/Saffron/Saffron/vendor/imgui -m64 -o /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Sandbox/main.o -MF /home/burhan/local-dev/Saffron/bin-int/Dist-linux-x86_64/Sandbox/main.d -c /home/burhan/local-dev/Saffron/Sandbox/src/main.cpp"
+          }
+]

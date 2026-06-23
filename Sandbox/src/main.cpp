@@ -1,4 +1,7 @@
 #include "Core.h"
+#include "Events/keys.h"
+#include "Log.h"
+#include "Renderer/Camera.h"
 #include "Renderer/Renderer.h"
 #include "Saffron.h"
 #include <GL/gl.h>
@@ -24,6 +27,18 @@ public:
 
 		Saffron::Renderer r(info);
 
+		Saffron::Camera cam;
+
+		Saffron::CameraConfigInfo caminfo;
+		caminfo.FOV = 45;
+		caminfo.pos = { 0.0f, 0.0f, -2.0f };
+		caminfo.window_width = 800;
+		caminfo.window_height = 600;
+
+		cam.ConfigCamera(caminfo);
+
+		r.RegisterCamera(&cam);
+
 		Saffron::EventEngine ev(r);
 
 		SF_INFO("Init Done!!!")
@@ -38,6 +53,17 @@ public:
 		    if(ev.IsKeyDown(Saffron::Key::D0)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
 
+		    if(ev.IsKeyDown(Saffron::Key::UpArrow))
+		    {
+		    	caminfo.pos.z += 0.01f;
+		    	cam.OverrideCameraPos(caminfo.pos);
+
+		    } if (ev.IsKeyDown(Saffron::Key::DownArrow))
+		    {
+		    	caminfo.pos.z -= 0.01f;
+		    	cam.OverrideCameraPos(caminfo.pos);
+		    }
+
 		    ImGuiIO& io = ImGui::GetIO();
 
 		    // --- ImGui Window for Triangle Creation ---
@@ -49,11 +75,11 @@ public:
     		ImGui::Begin("Triangle Creator");
 		
     		ImGui::Text("Set Vertex Positions:");
-    		ImGui::SliderFloat("X:", &pos[0], -1.0f, 1.0f);
-    		ImGui::SliderFloat("Y:", &pos[1], -1.0f, 1.0f);
-    		ImGui::SliderFloat("Z:", &pos[2], -1.0f, 1.0f);
+    		ImGui::SliderFloat("X:", &pos[0], -400, 400);
+    		ImGui::SliderFloat("Y:", &pos[1], -300, 300);
+    		ImGui::SliderFloat("Z:", &pos[2], -10, 10);
     		ImGui::Text("Size");
-    		ImGui::SliderFloat("::", &size, 0.0f, 2.0f);
+    		ImGui::SliderFloat("::", &size, 0, 200);
 		
     		ImGui::ColorEdit3("Color", color);
 
@@ -66,7 +92,6 @@ public:
     		}
 		
     		ImGui::End();
-
 
     		float fps;
 
@@ -81,11 +106,19 @@ public:
 			for(int i=0;i!=10;i++)
 	    	{
 	    		Saffron::TriangleInfo info;
-	    		info.pos = { (i/10.0f)-0.5f, 0.5f, 0.0f };
-	    		info.size = 0.5f;
+	    		info.pos = { (i*40)-200, 150, 0 };
+	    		info.size = 150;
 	    		info.color = {(i*10.0f)/100.0f, (i*10)/100.0f, (i*10.0f)/100.0f};
 	    		r.DrawTriangle(info);
 	    	}
+
+	    	Saffron::RectangleInfo rectiinfo;
+	    	rectiinfo.pos = { 0, 0, 0 };
+	    	rectiinfo.height = 150;
+	    	rectiinfo.width = 150;
+	    	rectiinfo.color = { 0.3f, 0.4f, 0.7f };
+
+	    	r.DrawRectangle(rectiinfo);
 
 	    	for(auto obj : objs)
 	    	{

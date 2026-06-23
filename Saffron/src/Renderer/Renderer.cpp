@@ -1,5 +1,13 @@
 #include "Renderer.h"
 #include "Core.h"
+#include "Log.h"
+#include "Renderer/Camera.h"
+#include "Util.h"
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/trigonometric.hpp>
+#include <numeric>
 
 namespace Saffron
 {
@@ -12,6 +20,8 @@ namespace Saffron
 
 	static GLFWwindow* s_Window = nullptr;
     static double lastTime;
+
+    static Camera* _renderer_cam = new Camera;
 
 	Renderer::Renderer(RendererInitInfo info)
 	{
@@ -48,6 +58,9 @@ namespace Saffron
             glfwTerminate();
             return;
         }
+
+        win_w = info.window_width; win_h = info.window_height;
+        aspect_ratio = (float)win_h / (float)win_w;
 
         SF_CORE_INFO_("Window Created!!", "Renderer");
 
@@ -109,8 +122,32 @@ namespace Saffron
 
         gl_shader_program_id = OpenGLShaders::LoadShaders("Vert.shader", "Frag.shader");
 
+        gl_Uniforms["Shader_uAspectFix_X"] = glGetUniformLocation(gl_shader_program_id, "uAspectFix_X");
+        gl_Uniforms["VP"] = glGetUniformLocation(gl_shader_program_id, "VP");
+
+        CameraConfigInfo caminfo;
+        caminfo.FOV = 45.0f;
+        caminfo.pos = { 0.0f, 0.0f, -3.0f };
+        caminfo.window_width = win_w;
+        caminfo.window_height = win_h;
+
+        _renderer_cam->ConfigCamera(caminfo);
+        DefaultCamera = true;
+
         SF_CORE_INFO_("Renderer initialized with OpenGL " << glGetString(GL_VERSION), "Renderer");
         isInitialized = true;
+    }
+
+    void Renderer::RegisterCamera(Camera* cam)
+    {
+        if(!cam->IsConfigured())
+        {
+            SF_CORE_ERR_("Camera Not Configured before Registration", "Renderer");
+            return;
+        }
+        DefaultCamera = false;
+        delete _renderer_cam;
+        _renderer_cam = cam;
     }
 
     void Renderer::SetBackgroundColor(glm::vec3 color)
@@ -123,9 +160,9 @@ namespace Saffron
     {
         RenderCommand cmd;
         cmd.type = MeshType::TRIANGLE;
-        cmd.pos = info.pos;
+        cmd.pos = Util::SC_to_NC(win_w, win_h, info.pos);
         cmd.color = info.color;
-        cmd.size = info.size;
+        cmd.size = Util::Single_SC_to_NC(win_h, info.size);
 
         CommandQueue.push_back(cmd);
 
@@ -134,6 +171,15 @@ namespace Saffron
     
     int Renderer::DrawRectangle(RectangleInfo info)
     {
+        RenderCommand cmd;
+        cmd.type = MeshType::RECTANGLE;
+        cmd.pos = Util::SC_to_NC(win_w, win_h, info.pos);
+        cmd.color = info.color;
+        cmd.h = Util::Single_SC_to_NC(win_h, info.height);
+        cmd.w = Util::Single_SC_to_NC(win_h, info.width);
+
+        CommandQueue.push_back(cmd);
+
         return 0;
     }
 
@@ -167,36 +213,91 @@ namespace Saffron
 
         for(auto cmd : CommandQueue)
         {
-            switch (cmd.type) {
-                case MeshType::TRIANGLE:
-                    float vert_data[6*3] = {
-                        cmd.pos.x, cmd.pos.y+(cmd.size/2), cmd.pos.z,
-                        cmd.color.r, cmd.color.g, cmd.color.b,
+            if(cmd.type == MeshType::TRIANGLE) {
 
-                        cmd.pos.x-(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
-                        cmd.color.r, cmd.color.g, cmd.color.b,
+                // Conversion
+                float vert_data[6*3] = {
+                    cmd.pos.x, cmd.pos.y+(cmd.size/2), cmd.pos.z,
+                    cmd.color.r, cmd.color.g, cmd.color.b,
 
-                        cmd.pos.x+(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
-                        cmd.color.r, cmd.color.g, cmd.color.b, 
-                    };
-                    glBufferSubData(GL_ARRAY_BUFFER, VB_offset*sizeof(float), sizeof(vert_data), vert_data);
-                    VB_offset += 18;
+                    cmd.pos.x-(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
+                    cmd.color.r, cmd.color.g, cmd.color.b,
 
-                    unsigned int index_data[3] = {
-                        (unsigned int)( ( IB_offset - 1) + 1 ),
-                        (unsigned int)( ( IB_offset - 1) + 2 ),
-                        (unsigned int)( ( IB_offset - 1) + 3 )
-                    };
+                    cmd.pos.x+(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
+                    cmd.color.r, cmd.color.g, cmd.color.b, 
+                };
+                
+                glBufferSubData(GL_ARRAY_BUFFER, VB_offset*sizeof(float), sizeof(vert_data), vert_data);
+                VB_offset += 18;
 
-                    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, IB_offset*sizeof(float), sizeof(index_data), index_data);
-                    IB_offset += 3;
+                unsigned int index_data[3] = {
+                    (unsigned int)( (IB_offset - 1) + 1 ),
+                    (unsigned int)( (IB_offset - 1) + 2 ),
+                    (unsigned int)( (IB_offset - 1) + 3 )
+                };
 
+                glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, IB_offset*sizeof(float), sizeof(index_data), index_data);
+                IB_offset += 3;
+            }
+
+            if(cmd.type == MeshType::RECTANGLE)
+            {
+                float vert_data[6*4] = {
+                    cmd.pos.x, cmd.pos.y, cmd.pos.z,
+                    cmd.color.r, cmd.color.g, cmd.color.b,
+
+                    cmd.pos.x, cmd.pos.y-cmd.h, cmd.pos.z,
+                    cmd.color.r, cmd.color.g, cmd.color.b,
+
+                    cmd.pos.x+cmd.w , cmd.pos.y-cmd.h , cmd.pos.z,
+                    cmd.color.r, cmd.color.g, cmd.color.b,
+
+                    cmd.pos.x+cmd.w , cmd.pos.y, cmd.pos.z,
+                    cmd.color.r, cmd.color.g, cmd.color.b
+                };
+
+                glBufferSubData(GL_ARRAY_BUFFER, VB_offset*sizeof(float), sizeof(vert_data), vert_data);
+                VB_offset += 24;
+
+                unsigned int index_data[6] = {
+                    (unsigned int)( (IB_offset - 1) + 1 ),
+                    (unsigned int)( (IB_offset - 1) + 2 ),
+                    (unsigned int)( (IB_offset - 1) + 3 ),
+                    (unsigned int)( (IB_offset - 1) + 4 ),
+                    (unsigned int)( (IB_offset - 1) + 1 ),
+                    (unsigned int)( (IB_offset - 1) + 3 )
+                };
+
+                glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, IB_offset*sizeof(unsigned int), sizeof(index_data), index_data);
+                IB_offset += 6;
             }
         }
-
         glUseProgram(gl_shader_program_id);
         glBindVertexArray(gl_global_VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
+
+        // glm::mat4 projection = glm::perspective(
+        //     glm::radians(45.0f),
+        //     (float)win_w / win_h, 
+        //     0.1f, 
+        //     100.0f
+        // );
+
+        // glm::mat4 view = glm::lookAt(
+        //     glm::vec3({ 0.0f, 0.0f, -3.0f }), 
+        //     glm::vec3({ 0.0f, 0.0f, 0.0f } ), 
+        //     glm::vec3({ 0.0f, 1.0f, 0.0f } )
+        // );
+
+        // glm::mat4 VP = projection * view;
+
+        glm::mat4 VP = _renderer_cam->GetVP();
+
+        // Uniforms
+        glUniform1f(gl_Uniforms["Shader_uAspectFix_X"], aspect_ratio);
+        glUniformMatrix4fv(gl_Uniforms["VP"], 1, GL_FALSE, &VP[0][0]);
+
+        // Drawing 
         glDrawElements(GL_TRIANGLES, IB_offset, GL_UNSIGNED_INT, 0);
 
         igRender.EndFrame();     
@@ -212,8 +313,7 @@ namespace Saffron
         io.DeltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        //sleep_ms(10); //------------------------------------------------------------------------------------
-
+        //sleep_ms(10); 
     }
     
     bool Renderer::ShouldEndLoop()
@@ -223,6 +323,9 @@ namespace Saffron
 
 
     void Renderer::Shutdown() {
+
+        if(DefaultCamera) delete _renderer_cam;
+
         igRender.Shutdown();
 
         glfwDestroyWindow(s_Window);

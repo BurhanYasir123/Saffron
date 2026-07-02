@@ -72,6 +72,7 @@ namespace Saffron
 		unsigned int gl_global_VAO;
 		unsigned int gl_global_VB;
 		unsigned int gl_global_IB;
+		unsigned int gl_test_tex_buffer;
 		int VB_offset;
 		int IB_offset;
 		std::unordered_map<const char*, int> gl_Uniforms;
@@ -92,6 +93,7 @@ namespace Saffron
 		int win_w; int win_h;
 
 		GLFWwindow* GetWindowHandle();
+		glm::vec2 GetWindowSize();
 		bool IsInitialized() { return isInitialized; };
 		void Init(RendererInitInfo info);
 		void SetBackgroundColor(glm::vec3 color);

@@ -5,6 +5,7 @@
 #include "Renderer/Renderer.h"
 #include "Saffron.h"
 #include <GL/gl.h>
+#include <GLFW/glfw3.h>
 #include <vector>
 
 class Sandbox : public Saffron::Application {
@@ -39,38 +40,60 @@ public:
 
 		r.RegisterCamera(&cam);
 
-		Saffron::EventEngine ev(r);
+		Saffron::EventEngine ev(&r);
 
 		SF_INFO("Init Done!!!")
 
 		std::vector<Saffron::TriangleInfo> objs;
+
+		Saffron::TriangleInfo trinfo;
+	    	trinfo.pos = { 0, 0, 0 };
+	    	trinfo.size = 100;
+	    	trinfo.color = { 1.0f, 0.0f, 0.5f };
+
+	    float fps;
 
 		while (!r.ShouldEndLoop()) {
 		    r.BeginFrame();
 
     		framei += 1;
 
-		    if(ev.IsKeyDown(Saffron::Key::D0)){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
+		    if(ev.GetMousePos().x < 100){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
 
-		    if(ev.IsKeyDown(Saffron::Key::UpArrow))
-		    {
+		    // Camera
+		    if(ev.IsKeyDown(Saffron::Key::W)){
 		    	caminfo.pos.z += 0.01f;
 		    	cam.OverrideCameraPos(caminfo.pos);
-
-		    } if (ev.IsKeyDown(Saffron::Key::DownArrow))
-		    {
+		    } if (ev.IsKeyDown(Saffron::Key::A)){
+		    	caminfo.pos.x += 0.01f;
+		    	cam.OverrideCameraPos(caminfo.pos);
+		    } if (ev.IsKeyDown(Saffron::Key::S)){
 		    	caminfo.pos.z -= 0.01f;
 		    	cam.OverrideCameraPos(caminfo.pos);
-		    }
+		    } if (ev.IsKeyDown(Saffron::Key::D)){
+		    	caminfo.pos.x -= 0.01f;
+		    	cam.OverrideCameraPos(caminfo.pos);
+		    } if (ev.IsKeyDown(Saffron::Key::E)){
+		    	caminfo.pos.y -= 0.01f;
+		    	cam.OverrideCameraPos(caminfo.pos);
+		    } if (ev.IsKeyDown(Saffron::Key::Q)){
+		    	caminfo.pos.y += 0.01f;
+		    	cam.OverrideCameraPos(caminfo.pos);
+		    } 
 
 		    ImGuiIO& io = ImGui::GetIO();
+
+		    // if( glfwGetKey(r.GetWindowHandle(), GLFW_KEY_ENTER) == GLFW_PRESS )
+		    // {
+		    // 	r.SetBackgroundColor({0.0f, 0.0f, 0.0f});
+		    // }
 
 		    // --- ImGui Window for Triangle Creation ---
 
 		    static float pos[3] = {0.0f, 0.0f, 0.0f};
     		static float color[3] = { 0.4f, 0.7f, 0.2f };
-    		static float size = 0.5f;
+    		static float size = 100;
 		
     		ImGui::Begin("Triangle Creator");
 		
@@ -93,8 +116,6 @@ public:
 		
     		ImGui::End();
 
-    		float fps;
-
 		    if((framei%10) == 0){ fps = 1.0f / io.DeltaTime; };
 
     		ImGui::Begin("Demo");
@@ -111,6 +132,15 @@ public:
 	    		info.color = {(i*10.0f)/100.0f, (i*10)/100.0f, (i*10.0f)/100.0f};
 	    		r.DrawTriangle(info);
 	    	}
+
+	    	// Triangle
+	    	// if(ev.IsKeyDown(Saffron::Key::W)) { trinfo.pos.y += 0.5; }
+			// if(ev.IsKeyDown(Saffron::Key::A)) { trinfo.pos.x += 0.5; }
+			// if(ev.IsKeyDown(Saffron::Key::S)) { trinfo.pos.y -= 0.5; }
+			// if(ev.IsKeyDown(Saffron::Key::D)) { trinfo.pos.x -= 0.5; }
+
+	    	r.DrawTriangle(trinfo);
+
 
 	    	Saffron::RectangleInfo rectiinfo;
 	    	rectiinfo.pos = { 0, 0, 0 };

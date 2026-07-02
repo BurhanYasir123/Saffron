@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Renderer/Renderer.h"
+#include "imgui.h"
 #include "keys.h"
 
 
@@ -20,13 +21,15 @@ namespace Saffron
     		return true;
 		}
 
+		Renderer* _r;
+
 	public:
-		EventEngine(Renderer& renderer);
+		EventEngine(Renderer* renderer);
 		~EventEngine();
 
-		bool IsKeyDown(ImGuiKey key);
-		bool IsKeyPressed(ImGuiKey key);
-		bool IsKeyReleased(ImGuiKey key);
+		bool IsKeyDown(int key);
+		bool IsKeyPressed(int key);
+		bool IsKeyReleased(int key);
 		bool IsMouseDown(int button);
 		bool IsMouseClicked(int button);
 		bool IsMouseReleased(int button);

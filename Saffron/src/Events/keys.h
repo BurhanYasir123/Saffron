@@ -6,9 +6,9 @@ namespace Saffron
 {
 	namespace Key
 	{
-		#define def_key(x) constexpr ImGuiKey x = ImGuiKey_##x;
-		#define def_key_num(x) constexpr ImGuiKey D##x = ImGuiKey_##x;
-		#define def_button(x) constexpr ImGuiMouseButton Mouse##x = ImGuiMouseButton_##x;
+		#define def_key(x) constexpr int x = GLFW_KEY_##x;
+		#define def_key_num(x) constexpr int D##x = GLFW_KEY_##x;
+		#define def_button(x) constexpr int Mouse##x = GLFW_MOUSE_BUTTON_##x;
 
 		// Letters
 		def_key( A ); def_key( I ); def_key( Q ); def_key( Y );
@@ -27,7 +27,7 @@ namespace Saffron
 		def_key_num( 7 ); def_key_num( 8 ); def_key_num( 9 );
 
 		// Mouse Buttons
-		def_button(Left); def_button(Middle); def_button(Right);
+		def_button(LEFT); def_button(MIDDLE); def_button(RIGHT);
 
 		// Function Keys
 		def_key(F1); def_key(F2); def_key(F3); def_key(F4);
@@ -35,8 +35,9 @@ namespace Saffron
 		def_key(F9); def_key(F10); def_key(F11); def_key(F12);
 
 		// Arrows
-		def_key(RightArrow); def_key(LeftArrow);
-		def_key(DownArrow); def_key(UpArrow);
+
+		def_key(RIGHT); def_key(LEFT);
+		def_key(DOWN); def_key(UP);
 
 		// Modifiers
 		// todo...

@@ -1,11 +1,14 @@
 #include "Event.h"
+#include <GLFW/glfw3.h>
+#include <glm/ext/vector_float2.hpp>
 
 namespace Saffron
 {
-	EventEngine::EventEngine(Renderer& renderer)
+	EventEngine::EventEngine(Renderer* renderer)
 		: io(ImGui::GetIO())
 	{
-		if(!renderer.IsInitialized())
+		_r = renderer;
+		if(!renderer->IsInitialized())
 		{	
 			SF_CORE_ERR_("ImGuiRenderer not intialized!!!", "Event");
 		}
@@ -16,38 +19,34 @@ namespace Saffron
 
 	}
 
-	bool EventEngine::IsKeyDown(ImGuiKey key)
+	bool EventEngine::IsKeyDown(int key)
 	{
-		return ImGui::IsKeyDown((key));
+		return glfwGetKey(_r->GetWindowHandle(), key) == GLFW_PRESS;
 	}
 
-	bool EventEngine::IsKeyPressed(ImGuiKey key)
+	bool EventEngine::IsKeyPressed(int key)
 	{
-		return ImGui::IsKeyPressed((key));
+		return glfwGetKey(_r->GetWindowHandle(), key) == GLFW_PRESS;
 	}
 	
-	bool EventEngine::IsKeyReleased(ImGuiKey key)
+	bool EventEngine::IsKeyReleased(int key)
 	{
-		return ImGui::IsKeyReleased((key));
+		return glfwGetKey(_r->GetWindowHandle(), key) == GLFW_RELEASE;
 	}
 
 	bool EventEngine::IsMouseDown(int button)
 	{
-		if(boundsCheckMouse(button))
-		{
-			io.MouseDown[button];
-		}
-		return false;
+		return glfwGetMouseButton(_r->GetWindowHandle(), button ) == GLFW_PRESS;
 	}
 
 	bool EventEngine::IsMouseClicked(int button)
 	{
-		return ImGui::IsMouseClicked(button);
+		return glfwGetMouseButton(_r->GetWindowHandle(), button ) == GLFW_PRESS;
 	}
 
 	bool EventEngine::IsMouseReleased(int button)
 	{
-		return ImGui::IsMouseReleased(button);
+		return glfwGetMouseButton(_r->GetWindowHandle(), button ) == GLFW_RELEASE;
 	}
 
 	float EventEngine::GetMouseWheel()
@@ -57,7 +56,9 @@ namespace Saffron
 
 	glm::vec2 EventEngine::GetMousePos()
 	{
-		return glm::vec2(io.MousePos.x, io.MousePos.y);
+		double x; double y; 
+		glfwGetCursorPos(_r->GetWindowHandle(), &x, &y);
+		return glm::vec2(x-(_r->GetWindowSize().x/2), y-(_r->GetWindowSize().y/2));
 	}
 
 }

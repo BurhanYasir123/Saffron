@@ -41,6 +41,23 @@ project "ImGui"
     }
 
 
+project "stb_image"
+    location "Saffron/vendor/stb"
+    kind "StaticLib"
+    language "C++"
+    staticruntime "on"
+
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")    
+
+    files {
+        "Saffron/vendor/stb/stb_image_impl.cpp"
+    }
+
+    includedirs {
+        "Saffron/vendor/stb"
+    }
+
 project "Saffron"
     location "Saffron"
     kind "StaticLib"
@@ -53,18 +70,21 @@ project "Saffron"
 
     files {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        --"Saffron/vendor/stb/stb_image_impl.cpp"
     }
 
     includedirs {
         "%{prj.name}/src/",
         "Saffron/vendor/glad/include",
-        "Saffron/vendor/imgui"
+        "Saffron/vendor/imgui",
+        "Saffron/vendor/stb/"
     }
 
     links {
         "Glad",
-        "ImGui"
+        "ImGui",
+        "stb_image"
     }
 
     filter "system:linux"
@@ -107,14 +127,16 @@ project "Sandbox"
     includedirs {
         "Saffron/src",
         "Saffron/vendor/glad/include",
-        "Saffron/vendor/imgui"
+        "Saffron/vendor/imgui",
+        "Saffron/vendor/stb/"
     }
 
     links {
         "Saffron",
         "glfw",
         "Glad",
-        "ImGui"
+        "ImGui",
+        "stb_image"
     }
 
     filter "configurations:Debug"

@@ -14,6 +14,10 @@
 #include <thread>
 #include <fstream>
 
+#include "Globals.h"
+
+#include "stb_image.h"
+
 #include "glad/glad.h"
 
 #include "glm/glm.hpp"

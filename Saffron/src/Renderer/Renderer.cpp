@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "Renderer/Camera.h"
 #include "Util.h"
+#include "stb_image.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -37,6 +38,11 @@ namespace Saffron
 	{
 		return s_Window;
 	}
+
+    glm::vec2 Renderer::GetWindowSize()
+    {
+        return glm::vec2(win_w, win_h);
+    }
 
     void Renderer::Init(RendererInitInfo info) {
         if (!glfwInit()) {
@@ -102,7 +108,7 @@ namespace Saffron
             3,
             GL_FLOAT,
             GL_FALSE,
-            6 * sizeof(float),
+            9 * sizeof(float),
             (void*)0
         );
         glEnableVertexAttribArray(0);
@@ -114,13 +120,35 @@ namespace Saffron
             3, 
             GL_FLOAT, 
             GL_FALSE, 
-            6 * sizeof(float), 
+            9 * sizeof(float), 
             (void*)(3 * sizeof(float))
         );
         glEnableVertexAttribArray(1);
 
 
-        gl_shader_program_id = OpenGLShaders::LoadShaders("Vert.shader", "Frag.shader");
+        // Tex Coords
+        glVertexAttribPointer(
+            2,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            9 * sizeof(float),
+            (void*)(6 * sizeof(float))
+        );
+        glEnableVertexAttribArray(2);
+
+        // TexRender Bool
+        glVertexAttribPointer(
+            3,
+            1,
+            GL_FLOAT,
+            GL_FALSE,
+            9 * sizeof(float),
+            (void*)(8 * sizeof(float))
+        );
+        glEnableVertexAttribArray(3);
+
+        gl_shader_program_id = OpenGLShaders::LoadShaders("res/sys/Vert.shader", "res/sys/Frag.shader");
 
         gl_Uniforms["Shader_uAspectFix_X"] = glGetUniformLocation(gl_shader_program_id, "uAspectFix_X");
         gl_Uniforms["VP"] = glGetUniformLocation(gl_shader_program_id, "VP");
@@ -133,6 +161,28 @@ namespace Saffron
 
         _renderer_cam->ConfigCamera(caminfo);
         DefaultCamera = true;
+
+        stbi_set_flip_vertically_on_load(true);
+
+        int width, height, nrChannels;
+        unsigned char* data = stbi_load("res/sys/icon_default.png", &width, &height, &nrChannels, 0);
+        if (!data) {
+            std::cout << "Failed to load texture\n";
+        }
+
+        glGenTextures(1, &gl_test_tex_buffer);
+        glBindTexture(GL_TEXTURE_2D, gl_test_tex_buffer);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        GLenum format = nrChannels == 3 ? GL_RGB : GL_RGBA;
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(data);
 
         SF_CORE_INFO_("Renderer initialized with OpenGL " << glGetString(GL_VERSION), "Renderer");
         isInitialized = true;
@@ -216,19 +266,22 @@ namespace Saffron
             if(cmd.type == MeshType::TRIANGLE) {
 
                 // Conversion
-                float vert_data[6*3] = {
+                float vert_data[9*3] = {
                     cmd.pos.x, cmd.pos.y+(cmd.size/2), cmd.pos.z,
                     cmd.color.r, cmd.color.g, cmd.color.b,
+                    0.0f, 0.0f, 0.0f,
 
                     cmd.pos.x-(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
                     cmd.color.r, cmd.color.g, cmd.color.b,
+                    0.0f, 0.0f, 0.0f,
 
                     cmd.pos.x+(cmd.size/2), cmd.pos.y-(cmd.size/2), cmd.pos.z,
-                    cmd.color.r, cmd.color.g, cmd.color.b, 
+                    cmd.color.r, cmd.color.g, cmd.color.b,
+                    0.0f, 0.0f, 0.0f, 
                 };
                 
                 glBufferSubData(GL_ARRAY_BUFFER, VB_offset*sizeof(float), sizeof(vert_data), vert_data);
-                VB_offset += 18;
+                VB_offset += 27;
 
                 unsigned int index_data[3] = {
                     (unsigned int)( (IB_offset - 1) + 1 ),
@@ -242,30 +295,34 @@ namespace Saffron
 
             if(cmd.type == MeshType::RECTANGLE)
             {
-                float vert_data[6*4] = {
+                float vert_data[9*4] = {
                     cmd.pos.x, cmd.pos.y, cmd.pos.z,
                     cmd.color.r, cmd.color.g, cmd.color.b,
+                    1.0f, 1.0f, 1.0f,
 
                     cmd.pos.x, cmd.pos.y-cmd.h, cmd.pos.z,
                     cmd.color.r, cmd.color.g, cmd.color.b,
+                    1.0f, 0.0f, 1.0f,
 
                     cmd.pos.x+cmd.w , cmd.pos.y-cmd.h , cmd.pos.z,
                     cmd.color.r, cmd.color.g, cmd.color.b,
+                    0.0f, 0.0f, 1.0f,
 
                     cmd.pos.x+cmd.w , cmd.pos.y, cmd.pos.z,
-                    cmd.color.r, cmd.color.g, cmd.color.b
+                    cmd.color.r, cmd.color.g, cmd.color.b,
+                    0.0f, 1.0f, 1.0f,
                 };
 
                 glBufferSubData(GL_ARRAY_BUFFER, VB_offset*sizeof(float), sizeof(vert_data), vert_data);
-                VB_offset += 24;
+                VB_offset += 36;
 
                 unsigned int index_data[6] = {
                     (unsigned int)( (IB_offset - 1) + 1 ),
                     (unsigned int)( (IB_offset - 1) + 2 ),
                     (unsigned int)( (IB_offset - 1) + 3 ),
-                    (unsigned int)( (IB_offset - 1) + 4 ),
+                    (unsigned int)( (IB_offset - 1) + 3 ),
                     (unsigned int)( (IB_offset - 1) + 1 ),
-                    (unsigned int)( (IB_offset - 1) + 3 )
+                    (unsigned int)( (IB_offset - 1) + 4 )
                 };
 
                 glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, IB_offset*sizeof(unsigned int), sizeof(index_data), index_data);
@@ -296,6 +353,11 @@ namespace Saffron
         // Uniforms
         glUniform1f(gl_Uniforms["Shader_uAspectFix_X"], aspect_ratio);
         glUniformMatrix4fv(gl_Uniforms["VP"], 1, GL_FALSE, &VP[0][0]);
+
+        // Other
+
+
+        glBindTexture(GL_TEXTURE_2D, gl_test_tex_buffer);
 
         // Drawing 
         glDrawElements(GL_TRIANGLES, IB_offset, GL_UNSIGNED_INT, 0);

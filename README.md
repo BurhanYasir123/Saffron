@@ -1,4 +1,6 @@
 # Saffron
+![Logo](./sys_res/icon_default.png)
+
 A Game Engine made after failing way too many times
 
 # Building

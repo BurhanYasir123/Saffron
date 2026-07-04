@@ -1,5 +1,5 @@
 # Saffron
-<img src="./sys_res/icon_default.png" alt="Logo" width="200" height="200">
+<img src="./sys_res/banner.png" alt="Logo" width="365" height="200">
 
 A Game Engine made after failing way too many times
 

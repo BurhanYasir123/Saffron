@@ -3,18 +3,9 @@
 #include "Log.h"
 #include "Renderer/Camera.h"
 #include "Util.h"
-#include "stb_image.h"
-#include <glm/ext/matrix_float4x4.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/ext/vector_float3.hpp>
-#include <glm/trigonometric.hpp>
-#include <numeric>
 
 namespace Saffron
 {
-    const size_t MAX_VERTS = 10000; 
-    const size_t MAX_INDICES = 20000;
-
     void sleep_ms(int ms) {
         std::this_thread::sleep_for(std::chrono::milliseconds(ms));
     }
@@ -97,10 +88,10 @@ namespace Saffron
         glGenBuffers(1, &gl_global_IB);
 
         glBindBuffer(GL_ARRAY_BUFFER, gl_global_VB);
-        glBufferData(GL_ARRAY_BUFFER, MAX_VERTS * sizeof(float), nullptr, GL_STREAM_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, Runtime::MAX_VERTS * sizeof(float), nullptr, GL_STREAM_DRAW);
         
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_INDICES * sizeof(unsigned int), nullptr, GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, Runtime::MAX_INDICES * sizeof(unsigned int), nullptr, GL_STREAM_DRAW);
 
         // Verts
         glVertexAttribPointer(
@@ -148,10 +139,10 @@ namespace Saffron
         );
         glEnableVertexAttribArray(3);
 
-        gl_shader_program_id = OpenGLShaders::LoadShaders("res/sys/Vert.shader", "res/sys/Frag.shader");
+        shader_program = OpenGLShaders::LoadShaders("res/sys/Vert.shader", "res/sys/Frag.shader");
 
-        gl_Uniforms["Shader_uAspectFix_X"] = glGetUniformLocation(gl_shader_program_id, "uAspectFix_X");
-        gl_Uniforms["VP"] = glGetUniformLocation(gl_shader_program_id, "VP");
+        Uniforms["Shader_uAspectFix_X"] = glGetUniformLocation(shader_program, "uAspectFix_X");
+        Uniforms["VP"] = glGetUniformLocation(shader_program, "VP");
 
         CameraConfigInfo caminfo;
         caminfo.FOV = 45.0f;
@@ -170,8 +161,8 @@ namespace Saffron
             std::cout << "Failed to load texture\n";
         }
 
-        glGenTextures(1, &gl_test_tex_buffer);
-        glBindTexture(GL_TEXTURE_2D, gl_test_tex_buffer);
+        glGenTextures(1, &gl_global_TB);
+        glBindTexture(GL_TEXTURE_2D, gl_global_TB);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);   
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -329,35 +320,18 @@ namespace Saffron
                 IB_offset += 6;
             }
         }
-        glUseProgram(gl_shader_program_id);
+        glUseProgram(shader_program);
         glBindVertexArray(gl_global_VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_global_IB);
-
-        // glm::mat4 projection = glm::perspective(
-        //     glm::radians(45.0f),
-        //     (float)win_w / win_h, 
-        //     0.1f, 
-        //     100.0f
-        // );
-
-        // glm::mat4 view = glm::lookAt(
-        //     glm::vec3({ 0.0f, 0.0f, -3.0f }), 
-        //     glm::vec3({ 0.0f, 0.0f, 0.0f } ), 
-        //     glm::vec3({ 0.0f, 1.0f, 0.0f } )
-        // );
-
-        // glm::mat4 VP = projection * view;
 
         glm::mat4 VP = _renderer_cam->GetVP();
 
         // Uniforms
-        glUniform1f(gl_Uniforms["Shader_uAspectFix_X"], aspect_ratio);
-        glUniformMatrix4fv(gl_Uniforms["VP"], 1, GL_FALSE, &VP[0][0]);
+        glUniform1f(Uniforms["Shader_uAspectFix_X"], aspect_ratio);
+        glUniformMatrix4fv(Uniforms["VP"], 1, GL_FALSE, &VP[0][0]);
 
-        // Other
-
-
-        glBindTexture(GL_TEXTURE_2D, gl_test_tex_buffer);
+        // Textures
+        glBindTexture(GL_TEXTURE_2D, gl_global_TB);
 
         // Drawing 
         glDrawElements(GL_TRIANGLES, IB_offset, GL_UNSIGNED_INT, 0);

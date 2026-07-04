@@ -68,14 +68,14 @@ namespace Saffron
 	{
 	private:
 		bool isInitialized = false;
-		unsigned int gl_shader_program_id;
+		unsigned int shader_program;
 		unsigned int gl_global_VAO;
 		unsigned int gl_global_VB;
 		unsigned int gl_global_IB;
-		unsigned int gl_test_tex_buffer;
+		unsigned int gl_global_TB;
 		int VB_offset;
 		int IB_offset;
-		std::unordered_map<const char*, int> gl_Uniforms;
+		std::unordered_map<const char*, int> Uniforms;
 		bool DefaultCamera;
 
 		//Camera* m_camera;

@@ -6,6 +6,7 @@
 #include "Saffron.h"
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include <unistd.h>
 #include <vector>
 
 class Sandbox : public Saffron::Application {
@@ -61,28 +62,28 @@ public:
 		    if(ev.GetMousePos().x < 100){ r.SetBackgroundColor({0.1f, 0.3f, 0.4f}); }
 		    else{ r.SetBackgroundColor({0.1f, 0.9f, 0.4f}); }
 
+		    ImGuiIO& io = ImGui::GetIO();
+
 		    // Camera
 		    if(ev.IsKeyDown(Saffron::Key::W)){
-		    	caminfo.pos.z += 0.01f;
+		    	caminfo.pos.z += 5.0f * io.DeltaTime;
 		    	cam.OverrideCameraPos(caminfo.pos);
 		    } if (ev.IsKeyDown(Saffron::Key::A)){
-		    	caminfo.pos.x += 0.01f;
+		    	caminfo.pos.x += 5.0f * io.DeltaTime;
 		    	cam.OverrideCameraPos(caminfo.pos);
 		    } if (ev.IsKeyDown(Saffron::Key::S)){
-		    	caminfo.pos.z -= 0.01f;
+		    	caminfo.pos.z -= 5.0f * io.DeltaTime;
 		    	cam.OverrideCameraPos(caminfo.pos);
 		    } if (ev.IsKeyDown(Saffron::Key::D)){
-		    	caminfo.pos.x -= 0.01f;
+		    	caminfo.pos.x -= 5.0f * io.DeltaTime;
 		    	cam.OverrideCameraPos(caminfo.pos);
 		    } if (ev.IsKeyDown(Saffron::Key::E)){
-		    	caminfo.pos.y -= 0.01f;
+		    	caminfo.pos.y -= 5.0f * io.DeltaTime;
 		    	cam.OverrideCameraPos(caminfo.pos);
 		    } if (ev.IsKeyDown(Saffron::Key::Q)){
-		    	caminfo.pos.y += 0.01f;
+		    	caminfo.pos.y += 5.0f * io.DeltaTime;
 		    	cam.OverrideCameraPos(caminfo.pos);
 		    } 
-
-		    ImGuiIO& io = ImGui::GetIO();
 
 		    // if( glfwGetKey(r.GetWindowHandle(), GLFW_KEY_ENTER) == GLFW_PRESS )
 		    // {
@@ -116,7 +117,7 @@ public:
 		
     		ImGui::End();
 
-		    if((framei%10) == 0){ fps = 1.0f / io.DeltaTime; };
+		    if((framei%100) == 0){ fps = 1.0f / io.DeltaTime; };
 
     		ImGui::Begin("Demo");
     		ImGui::Text("FPS: %.1f", fps);
@@ -132,6 +133,7 @@ public:
 	    		info.color = {(i*10.0f)/100.0f, (i*10)/100.0f, (i*10.0f)/100.0f};
 	    		r.DrawTriangle(info);
 	    	}
+
 
 	    	// Triangle
 	    	// if(ev.IsKeyDown(Saffron::Key::W)) { trinfo.pos.y += 0.5; }

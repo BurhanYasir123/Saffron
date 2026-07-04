@@ -1,11 +1,14 @@
 set -e
+
+c_config="${1:-Debug}"
+
 premake5 gmake
-make config=debug
+make config=${c_config,,}
 
-cp ./Saffron/src/Renderer/Shaders/Vert.shader ./bin/Debug-linux-x86_64/Sandbox/
-cp ./Saffron/src/Renderer/Shaders/Frag.shader ./bin/Debug-linux-x86_64/Sandbox/
+cp ./Saffron/src/Renderer/Shaders/Vert.shader ./bin/${c_config}-linux-x86_64/Sandbox/
+cp ./Saffron/src/Renderer/Shaders/Frag.shader ./bin/${c_config}-linux-x86_64/Sandbox/
 
-pushd ./bin/Debug-linux-x86_64/Sandbox/
+pushd ./bin/${c_config}-linux-x86_64/Sandbox/
 
 mkdir -p res/sys
 cp ../../../sys_res/icon_default.png ./res/sys

@@ -40,6 +40,10 @@ project "ImGui"
         "Saffron/src"
     }
 
+    links {
+        "glfw"
+    }
+
 
 project "stb_image"
     location "Saffron/vendor/stb"
@@ -89,10 +93,6 @@ project "Saffron"
 
     filter "system:linux"
         pic "On"
-        -- defines {
-        --     "SF_PLATFORM_LINUX",
-        --     "SF_BUILD_STATIC"
-        -- }
 
     filter "configurations:Debug"
         defines "SF_DEBUG"
@@ -107,7 +107,7 @@ project "Saffron"
     filter "configurations:Dist"
         defines "SF_DIST"
         runtime "Release"
-        optimize "on"
+        optimize "full"
 
 project "Sandbox"
     location "Sandbox"
